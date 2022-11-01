@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
-
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,7 +14,38 @@ class User(db.Model):
     def __repr__(self):
         return '<Login %r>' % self.id
 
-@app.route("/", methods=['POST', 'GET'])
+
+@app.route('/', methods=['POST','GET'])
+def login():
+    if request.method == 'POST':
+        if(request.form['btn'] == 'login'):
+            login_id = request.form['id']
+            login_pw = request.form['password']
+            exists = db.session.query(db.exists().where(User.id == login_id)).scalar()
+            if(not exists):
+                flash('Error: id not exists')
+                return redirect('/')
+
+            user = User.query.get_or_404(login_id)
+            try:
+                if (user.pw == login_pw):
+                    return redirect(url_for('/homepage', login_id))
+                else:
+                    flash('Error: password not match')
+                    return redirect('/')
+
+            except:
+                return 'Homepage not implemented yet'
+        elif (request.form['btn'] == 'admin'):
+            return redirect('/admin')
+    else:
+        return render_template('login.html')
+
+@app.route('/homepage/<int:id>')
+def homepage(id):
+    return -1
+
+@app.route("/admin", methods=['POST', 'GET'])
 def index():
     if request.method=='POST':
         login_id = request.form['id']
@@ -31,7 +62,7 @@ def index():
         try:
             db.session.add(new_login)
             db.session.commit()
-            return redirect('/')
+            return redirect('/admin')
         except:
             return "Issue in adding"
     else:
@@ -46,16 +77,9 @@ def delete(id):
     try:
         db.session.delete(delete_login)
         db.session.commit()
-        return redirect('/')
+        return redirect('/admin')
     except:
         return 'There was a problem deleting that registration'
-
-@app.route("/")
-def hello_world():
-    return render_template('index.html')
-
-
-
 
 
 if __name__=="__main__":

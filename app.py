@@ -17,7 +17,7 @@ def index():
     if request.method=='POST':
         login_id = request.form['id']
         login_psw = request.form['password']
-        new_login = Todo(id=login_id, content=login_psw, psw=login_psw)
+        new_login = Todo(id=login_id, content=login_psw)
 
         try:
             db.session.add(new_login)

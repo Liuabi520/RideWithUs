@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Demo</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">test registration demo</h1>
+    <table>
+        <tr>
+            <th>register</th>
+            <th>here</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                <td>id: </td>
+                <td>{{ task.id }}</td>
+                <td>password: </td>
+                <td>{{ task.content }}</td>
+                <td>
+                    <a href="/delete/{{task.id}}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="form">
+        <form action="/" method="POST">
+            <tr>
+                id:
+            </tr>
+            <input type="number" name="id">
+            <tr>
+                password:
+            </tr>
+            <input type="text" name="password">
+            <input type="submit" value="register">
+        </form>
+    </div>
+</div>
+{% endblock %}

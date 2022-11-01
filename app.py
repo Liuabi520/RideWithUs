@@ -19,10 +19,14 @@ def index():
     if request.method=='POST':
         login_id = request.form['id']
         login_pw = request.form['password']
-        login_isDriver = request.form['isDriver']
-        if login_isDriver == "on":
-            login_isDriver = True
 
+        login_isDriver = request.form['isDriver']
+        
+        if login_isDriver == 'on':
+            login_isDriver = True
+        else:
+            login_isDriver = False
+        print(login_isDriver)
         new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
 
         try:

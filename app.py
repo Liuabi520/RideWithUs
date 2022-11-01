@@ -19,10 +19,9 @@ def index():
     if request.method=='POST':
         login_id = request.form['id']
         login_pw = request.form['password']
-
         login_isDriver = request.form['isDriver']
-        
-        if login_isDriver == 'on':
+        print(request.form)
+        if login_isDriver == "yes":
             login_isDriver = True
         else:
             login_isDriver = False

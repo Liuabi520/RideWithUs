@@ -29,7 +29,7 @@ def login():
             user = User.query.get_or_404(login_id)
             try:
                 if (user.pw == login_pw):
-                    return redirect(url_for('/homepage', login_id))
+                    return redirect(url_for('homepage', id=login_id))
                 else:
                     flash('Error: password not match')
                     return redirect('/')
@@ -43,7 +43,7 @@ def login():
 
 @app.route('/homepage/<int:id>')
 def homepage(id):
-    return -1
+    return str(id)
 
 @app.route("/register", methods=['POST', 'GET'])
 def index():

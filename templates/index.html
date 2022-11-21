@@ -12,23 +12,10 @@
             <th>register</th>
             <th>here</th>
         </tr>
-        {% for task in tasks %}
-            <tr>
-                <td>id: </td>
-                <td>{{ task.id }}</td>
-                <td>password: </td>
-                <td>{{ task.pw }}</td>
-                <td>isDriver: </td>
-                <td>{{ task.isDriver }}</td>
-                <td>
-                    <a href="/delete/{{task.id}}">Delete</a>
-                </td>
-            </tr>
-        {% endfor %}
     </table>
 
     <div class="form">
-        <form action="/admin" method="POST">
+        <form action="/register" method="POST">
             <tr>
                 id:
             </tr>
@@ -41,6 +28,7 @@
             <input type="checkbox" name="isDriver" id="isDriver" value="yes"/>
             <input type="hidden" name="isDriver" value="no"/>
             <input type="submit" value="register">
+
         </form>
     </div>
 </div>

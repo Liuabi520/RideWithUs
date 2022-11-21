@@ -36,8 +36,8 @@ def login():
 
             except:
                 return 'Homepage not implemented yet'
-        elif (request.form['btn'] == 'admin'):
-            return redirect('/admin')
+        elif (request.form['btn'] == 'register'):
+            return redirect('/register')
     else:
         return render_template('login.html')
 
@@ -45,29 +45,54 @@ def login():
 def homepage(id):
     return -1
 
-@app.route("/admin", methods=['POST', 'GET'])
+@app.route("/register", methods=['POST', 'GET'])
 def index():
     if request.method=='POST':
         login_id = request.form['id']
         login_pw = request.form['password']
         login_isDriver = request.form['isDriver']
-        print(request.form)
         if login_isDriver == "yes":
             login_isDriver = True
         else:
             login_isDriver = False
-        print(login_isDriver)
         new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
 
         try:
             db.session.add(new_login)
             db.session.commit()
-            return redirect('/admin')
+            flash("you have successfully registered")
+            return redirect('/register')
         except:
-            return "Issue in adding"
+            flash("wrong user id")
+            return redirect("/register")
     else:
         logins = User.query.order_by(User.id).all()
         return render_template('index.html', tasks=logins)
+
+@app.route('/admin',methods=['POST', 'GET'])
+def admin():
+    if request.method=='POST':
+        login_id = request.form['id']
+        login_pw = request.form['password']
+        login_isDriver = request.form['isDriver']
+        if login_isDriver == "yes":
+            login_isDriver = True
+        else:
+            login_isDriver = False
+        new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
+
+        try:
+            db.session.add(new_login)
+            db.session.commit()
+            flash("you have successfully registered")
+            return redirect('/admin')
+        except:
+            flash("wrong user info")
+            return redirect("/admin")
+    else:
+        logins = User.query.order_by(User.id).all()
+        return render_template('admin.html', tasks=logins)
+
 
 @app.route('/delete/<int:id>')
 def delete(id):

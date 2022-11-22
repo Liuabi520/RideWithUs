@@ -14,6 +14,17 @@ class User(db.Model):
     def __repr__(self):
         return '<Login %r>' % self.id
 
+class Passenger(db.Model):
+    d_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), default='')
+    phoneNumber = db.Column(db.String(200), default='')
+    address = db.Column(db.String(200), default='')
+    card_info = db.Column(db.String(200), default='')
+    balance = db.Column(db.Integer, default=0)
+
+    def __repr__(self):
+        return '<Login %r>' % self.d_id
+
 
 @app.route('/', methods=['POST','GET'])
 def login():
@@ -27,9 +38,13 @@ def login():
                 return redirect('/')
 
             user = User.query.get_or_404(login_id)
+            is_driver = user.isDriver
             try:
                 if (user.pw == login_pw):
-                    return redirect(url_for('homepage', id=login_id))
+                    if (is_driver):
+                        return redirect(url_for('homepage_d', id=login_id))
+                    else:
+                        return redirect(url_for('homepage_p', id=login_id))
                 else:
                     flash('Error: password not match')
                     return redirect('/')
@@ -41,20 +56,44 @@ def login():
     else:
         return render_template('login.html')
 
-@app.route('/homepage/<int:id>')
-def homepage(id):
+@app.route('/homepage_p/<int:id>',methods=['POST', 'GET'])
+def homepage_p(id):
+    if request.method=='GET':
+        passenger = Passenger.query.get_or_404(id)
+        return render_template('homepage_passenger.html',tasks=passenger)
+    elif request.method=='POST':
+        passenger = Passenger.query.get_or_404(id)
+        passenger.name = request.form['name']
+        passenger.phoneNumber = request.form['phoneNumber']
+        passenger.address = request.form['address']
+        passenger.card_info = request.form['card_info']
+        try:
+            db.session.commit()
+            flash("updated")
+            return render_template('homepage_passenger.html', tasks=passenger)
+        except:
+            return "something wrong"
+
+
+@app.route('/homepage_d/<int:id>',methods=['POST', 'GET'])
+def homepage_d(id):
     return str(id)
 
 @app.route("/register", methods=['POST', 'GET'])
 def index():
     if request.method=='POST':
-        login_id = request.form['id']
+        login_id = int(request.form['id'])
         login_pw = request.form['password']
         login_isDriver = request.form['isDriver']
         if login_isDriver == "yes":
             login_isDriver = True
+            # todo create a new instance of Driver
         else:
             login_isDriver = False
+            temp = Passenger(d_id=login_id)
+            db.session.add(temp)
+            db.session.commit()
+            
         new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
 
         try:

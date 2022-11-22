@@ -25,6 +25,16 @@ class Passenger(db.Model):
     def __repr__(self):
         return '<Login %r>' % self.d_id
 
+class Driver(db.Model):
+    d_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), default='')
+    phoneNumber = db.Column(db.String(200), default='')
+    address = db.Column(db.String(200), default='')
+    card_info = db.Column(db.String(200), default='')
+    # todo: add car's info to Driver
+    def __repr__(self):
+        return '<Login %r>' % self.d_id
+
 
 @app.route('/', methods=['POST','GET'])
 def login():
@@ -77,7 +87,21 @@ def homepage_p(id):
 
 @app.route('/homepage_d/<int:id>',methods=['POST', 'GET'])
 def homepage_d(id):
-    return str(id)
+    if request.method == 'GET':
+        driver = Driver.query.get_or_404(id)
+        return render_template('homepage_driver.html', tasks=driver)
+    elif request.method == 'POST':
+        driver = Driver.query.get_or_404(id)
+        driver.name = request.form['name']
+        driver.phoneNumber = request.form['phoneNumber']
+        driver.address = request.form['address']
+        driver.card_info = request.form['card_info']
+        try:
+            db.session.commit()
+            flash("updated")
+            return render_template('homepage_driver.html', tasks=driver)
+        except:
+            return "something wrong"
 
 @app.route("/register", methods=['POST', 'GET'])
 def index():
@@ -87,13 +111,15 @@ def index():
         login_isDriver = request.form['isDriver']
         if login_isDriver == "yes":
             login_isDriver = True
-            # todo create a new instance of Driver
+            temp = Driver(d_id=login_id)
+            db.session.add(temp)
+            db.session.commit()
         else:
             login_isDriver = False
             temp = Passenger(d_id=login_id)
             db.session.add(temp)
             db.session.commit()
-            
+
         new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
 
         try:

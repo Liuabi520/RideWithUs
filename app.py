@@ -1,90 +1,3 @@
-<<<<<<< Updated upstream
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-db = SQLAlchemy(app)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    pw = db.Column(db.String(200), nullable=False)
-    isDriver = db.Column(db.Boolean, nullable=False)
-
-    def __repr__(self):
-        return '<Login %r>' % self.id
-
-
-@app.route('/', methods=['POST','GET'])
-def login():
-    if request.method == 'POST':
-        if(request.form['btn'] == 'login'):
-            login_id = request.form['id']
-            login_pw = request.form['password']
-            exists = db.session.query(db.exists().where(User.id == login_id)).scalar()
-            if(not exists):
-                flash('Error: id not exists')
-                return redirect('/')
-
-            user = User.query.get_or_404(login_id)
-            try:
-                if (user.pw == login_pw):
-                    return redirect(url_for('/homepage', login_id))
-                else:
-                    flash('Error: password not match')
-                    return redirect('/')
-
-            except:
-                return 'Homepage not implemented yet'
-        elif (request.form['btn'] == 'admin'):
-            return redirect('/admin')
-    else:
-        return render_template('login.html')
-
-@app.route('/homepage/<int:id>')
-def homepage(id):
-    return -1
-
-@app.route("/admin", methods=['POST', 'GET'])
-def index():
-    if request.method=='POST':
-        login_id = request.form['id']
-        login_pw = request.form['password']
-        login_isDriver = request.form['isDriver']
-        print(request.form)
-        if login_isDriver == "yes":
-            login_isDriver = True
-        else:
-            login_isDriver = False
-        print(login_isDriver)
-        new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
-
-        try:
-            db.session.add(new_login)
-            db.session.commit()
-            return redirect('/admin')
-        except:
-            return "Issue in adding"
-    else:
-        logins = User.query.order_by(User.id).all()
-        return render_template('index.html', tasks=logins)
-
-@app.route('/delete/<int:id>')
-def delete(id):
-    # get the value by id, if not found then 404
-    delete_login = User.query.get_or_404(id)
-
-    try:
-        db.session.delete(delete_login)
-        db.session.commit()
-        return redirect('/admin')
-    except:
-        return 'There was a problem deleting that registration'
-
-
-if __name__=="__main__":
-=======
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
@@ -159,17 +72,22 @@ def homepage_p(id):
         passenger = Passenger.query.get_or_404(id)
         return render_template('homepage_passenger.html',tasks=passenger)
     elif request.method=='POST':
-        passenger = Passenger.query.get_or_404(id)
-        passenger.name = request.form['name']
-        passenger.phoneNumber = request.form['phoneNumber']
-        passenger.address = request.form['address']
-        passenger.card_info = request.form['card_info']
-        try:
-            db.session.commit()
-            flash("updated")
-            return render_template('homepage_passenger.html', tasks=passenger)
-        except:
-            return "something wrong"
+        if (request.form['btn'] == 'edit_user_info'):
+            passenger = Passenger.query.get_or_404(id)
+            passenger.name = request.form['name']
+            passenger.phoneNumber = request.form['phoneNumber']
+            passenger.address = request.form['address']
+            passenger.card_info = request.form['card_info']
+            try:
+                db.session.commit()
+                flash("updated")
+                return render_template('homepage_passenger.html', tasks=passenger)
+            except:
+                return "something wrong"
+        elif request.form['btn'] == 'post_order':
+            Passenger.pick_up = request.form['pick_up']
+            Passenger.drop_off = request.form['drop_off']
+            return redirect(url_for('order_p', id=id))
 
 
 @app.route('/homepage_d/<int:id>',methods=['POST', 'GET'])
@@ -189,6 +107,13 @@ def homepage_d(id):
             return render_template('homepage_driver.html', tasks=driver)
         except:
             return "something wrong"
+
+@app.route('/order_p/<int:id>', methods=['POST', 'GET'])
+def order_p(id):
+    if request.method == 'GET':
+        p = Passenger.query.get_or_404(id)
+        return render_template('order_passenger.html', tasks=p)
+
 
 @app.route("/register", methods=['POST', 'GET'])
 def index():
@@ -220,6 +145,7 @@ def index():
     else:
         logins = User.query.order_by(User.id).all()
         return render_template('index.html', tasks=logins)
+
 
 @app.route('/admin',methods=['POST', 'GET'])
 def admin():
@@ -260,5 +186,4 @@ def delete(id):
 
 
 if __name__=="__main__":
->>>>>>> Stashed changes
     app.run(debug=True)

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {% extends 'base.html' %}
 
 {% block head %}
@@ -43,4 +44,51 @@
 
 
 </div>
+=======
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Login</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">RideWithUs: Login</h1>
+    <table>
+        <tr>
+            <th>Please login here</th>
+            <th>here</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                <td>id: </td>
+                <td>{{ task.id }}</td>
+                <td>password: </td>
+                <td>{{ task.pw }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="form">
+        <form action="/" method="POST">
+            <tr>
+                id:
+            </tr>
+            <input type="number" name="id">
+            <tr>
+                password:
+            </tr>
+            <input type="text" name="password">
+            <div class="form">
+                <input type="submit" name = "btn" value="login">
+            </div>
+            <div class="form">
+                <input type="submit" name = "btn" value="admin">
+            </div>
+        </form>
+    </div>
+
+
+</div>
+>>>>>>> Stashed changes
 {% endblock %}

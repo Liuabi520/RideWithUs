@@ -25,6 +25,7 @@ class Passenger(db.Model):
     phoneNumber = db.Column(db.String(200), default='')
     address = db.Column(db.String(200), default='')
     card_info = db.Column(db.String(200), default='')
+    # bio = db.Column(db.String(200), default='')
     balance = db.Column(db.Integer, default=0)
 
     def __repr__(self):
@@ -95,16 +96,28 @@ def homepage_p(id):
         return render_template('homepage_passenger.html', tasks=passenger)
     elif request.method == 'POST':
         passenger = Passenger.query.get_or_404(id)
-        passenger.name = request.form['name']
-        passenger.phoneNumber = request.form['phoneNumber']
-        passenger.address = request.form['address']
-        passenger.card_info = request.form['card_info']
+        if(request.form['name'] != ''):
+            passenger.name = request.form['name']
+        if(request.form['phoneNumber'] != ''):
+            passenger.phoneNumber = request.form['phoneNumber']
+        if(request.form['address'] != ''):
+            passenger.address = request.form['address']
+        if(request.form['card_info'] != ''):
+            passenger.card_info = request.form['card_info']
         try:
             db.session.commit()
             flash("updated")
             return render_template('homepage_passenger.html', tasks=passenger)
         except:
             return "something wrong"
+        
+@app.route('/profilePage/<int:id>', methods=['GET'])
+def profilePage(id):
+    if request.method == 'GET':
+        passenger = Passenger.query.get_or_404(id)
+        return render_template('profile.html', tasks=passenger)
+    else:
+        return "something wrong"
 
 
 @app.route('/homepage_d/<int:id>', methods=['POST', 'GET'])
@@ -224,6 +237,7 @@ def appointment(id):
     else:
         appointment = Appointment.query.get_or_404(id)
         return render_template('appointment.html', tasks=appointment)
+    
 
 
 if __name__ == "__main__":

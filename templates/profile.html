@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>ProfilePage</title>
+{% endblock %}
+
+{% block body %}
+<div class="content" style="text-align: center">
+    <h1 style="text-align: center">user info</h1>
+    <center>
+    <table>
+            <tr>
+                <td>id: </td>
+                <td>{{ tasks.d_id }}</td>
+            </tr>
+            <tr>
+                <td>name: </td>
+                <td>{{ tasks.name }}</td>
+            </tr>
+            <tr>
+                <td>phone number: </td>
+                <td>{{ tasks.phoneNumber }}</td>
+            </tr>
+            <tr>
+                <td>address: </td>
+                <td>{{ tasks.address }}</td>
+            </tr>
+            <tr>
+                <td>card info: </td>
+                <td>{{ tasks.card_info }}</td>
+            </tr>
+            <tr>
+                <td>balance: </td>
+                <td>{{ tasks.balance }}</td>
+            </tr>
+    </table>
+    <form action="/homepage_p/{{tasks.d_id}}">
+        <input type="submit" value="Go Back to Main Page" />
+    </form>
+</center>
+
+    </div>
+
+</div>
+{% endblock %}

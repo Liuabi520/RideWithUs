@@ -25,7 +25,6 @@ class Passenger(db.Model):
     phoneNumber = db.Column(db.String(200), default='')
     address = db.Column(db.String(200), default='')
     card_info = db.Column(db.String(200), default='')
-    # bio = db.Column(db.String(200), default='')
     balance = db.Column(db.Integer, default=0)
 
     def __repr__(self):
@@ -54,21 +53,6 @@ class Order(db.Model):
 
     def __repr__(self):
         return '<Login %r>' % self.a_id
-
-class Appointment(db.Model):
-    a_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    d_id = db.Column(db.Integer, db.ForeignKey('driver.d_id'))
-    p_id = db.Column(db.Integer, db.ForeignKey('passenger.d_id'))
-    planned_pickup = db.Column(db.String(200), default='')
-    planned_destination = db.Column(db.String(200), default='')
-    planned_start_time = db.Column(db.String(200), default='')
-    planned_payment_amount = db.Column(db.String(200), default='')
-
-    def __repr__(self):
-        return '<Login %r>' % self.a_id
-
-
-
 
 class Appointment(db.Model):
     a_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -114,15 +98,10 @@ def login():
         return render_template('login.html')
 
 
-
 @app.route('/homepage_p/<int:id>',methods=['POST', 'GET'])
-
-@app.route('/homepage_p/<int:id>', methods=['POST', 'GET'])
-
 def homepage_p(id):
-    if request.method == 'GET':
+    if request.method=='GET':
         passenger = Passenger.query.get_or_404(id)
-
         return render_template('homepage_passenger.html',tasks=passenger)
     elif request.method=='POST':
         if (request.form['btn'] == 'edit_user_info'):
@@ -145,18 +124,9 @@ def homepage_p(id):
             Passenger.pick_up = request.form['pick_up']
             Passenger.drop_off = request.form['drop_off']
             return redirect(url_for('appointment', id=id))
-        
-@app.route('/profilePage/<int:id>', methods=['GET'])
-def profilePage(id):
-    if request.method == 'GET':
-        passenger = Passenger.query.get_or_404(id)
-        return render_template('profile.html', tasks=passenger)
-    else:
-        return "something wrong"
 
 
-
-@app.route('/homepage_d/<int:id>', methods=['POST', 'GET'])
+@app.route('/homepage_d/<int:id>',methods=['POST', 'GET'])
 def homepage_d(id):
     if request.method == 'GET':
         driver = Driver.query.get_or_404(id)
@@ -207,7 +177,6 @@ def order_d(id):
         if (request.form['btn'] == 'Order_by_id'):
             orders = Order.query.order_by(Order.o_id).all()
             return render_template('order_driver.html', tasks=orders)
-
 
 @app.route("/register", methods=['POST', 'GET'])
 def index():
@@ -279,15 +248,7 @@ def delete(id):
         return 'There was a problem deleting that registration'
 
 
-
-
-if __name__=="__main__":
-    app.run(debug=True)
-
 @app.route('/appointment/<int:id>', methods=['POST', 'GET'])
-=======
-@app.route('/<int:id>/appointment', methods=['POST', 'GET'])
-
 def appointment(id):
     if request.method == 'POST':
         appointment_pickup = request.form['pickup']
@@ -296,7 +257,7 @@ def appointment(id):
         appointment_pltime = request.form['pltime']
         appointment_ppay = request.form['plpay']
         order = request.form['btn']
-        appoint = request.form['btn']j
+        appoint = request.form['btn']
         if order == "Order Now!":
             new_appointment = Appointment(planned_pickup=appointment_pickup, planned_destination=appointment_dest,
                                           planned_start_time=appointment_order_time,
@@ -317,9 +278,7 @@ def appointment(id):
         return render_template('appointment.html', tasks=appointment)
 
 
-
 if __name__ == "__main__":
     app.app_context().push()
     db.create_all()
     app.run(debug=True)
-

@@ -49,16 +49,9 @@
             </tr>
             <input type="text" name="address">
             <tr>
-                Bio:
-            </tr>
-            <input type="text" name="Bio">
-            <tr>
                 card info:
             </tr>
             <input type="text" name="card_info">
-
-            <input type="submit" value="edit_user_info">
-
             <div class="form">
                 <input type="submit" name="btn" value="edit_user_info">
             </div>
@@ -78,14 +71,14 @@
             <div class="form">
                 <input type="submit" name = "btn" value="post_appointment">
             </div>
-
         </form>
-    </div>
-    <div>
-        <form action="/profilePage/{{tasks.d_id}}">
-            <input type="submit" value="Profile Page" />
-        </form>
-    </div>
 
+        <div>
+            <form action="/profilePage/{{tasks.d_id}}">
+                <input type="submit" value="Profile Page" />
+            </form>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

@@ -49,6 +49,10 @@
             </tr>
             <input type="text" name="address">
             <tr>
+                Bio:
+            </tr>
+            <input type="text" name="Bio">
+            <tr>
                 card info:
             </tr>
             <input type="text" name="card_info">
@@ -77,5 +81,11 @@
 
         </form>
     </div>
+    <div>
+        <form action="/profilePage/{{tasks.d_id}}">
+            <input type="submit" value="Profile Page" />
+        </form>
+    </div>
+
 </div>
 {% endblock %}

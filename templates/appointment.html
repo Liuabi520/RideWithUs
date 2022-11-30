@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>homepage</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">Appointment Info</h1>
+    <table>
+        <tr>
+            <td>appointment_id: </td>
+            <td>{{ tasks.a_id }}</td>
+        </tr>
+        <tr>
+            <td>passenger id: </td>
+            <td>{{ tasks.p_id }}</td>
+        </tr>
+        <tr>
+            <td>driver id: </td>
+            <td>{{ tasks.d_id }}</td>
+        </tr>
+        <tr>
+            <td>Start time: </td>
+            <td>{{ tasks.planned_start_time }}</td>
+        </tr>
+        <tr>
+            <td>Pick up: </td>
+            <td>{{ tasks.planned_pickup }}</td>
+        </tr>
+        <tr>
+            <td>Destination: </td>
+            <td>{{ tasks.planned_destination }}</td>
+        </tr>
+        <tr>
+            <td>Planned payment: </td>
+            <td>{{ tasks.planned_payment_amount }}</td>
+        </tr>
+
+
+    </table>
+    </div>
+{% endblock %}

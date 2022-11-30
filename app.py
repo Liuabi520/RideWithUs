@@ -124,29 +124,6 @@ def homepage_p(id):
         passenger = Passenger.query.get_or_404(id)
 
         return render_template('homepage_passenger.html',tasks=passenger)
-    elif request.method=='POST':
-        if (request.form['btn'] == 'edit_user_info'):
-            passenger = Passenger.query.get_or_404(id)
-            passenger.name = request.form['name']
-            passenger.phoneNumber = request.form['phoneNumber']
-            passenger.address = request.form['address']
-            passenger.card_info = request.form['card_info']
-            try:
-                db.session.commit()
-                flash("updated")
-                return render_template('homepage_passenger.html', tasks=passenger)
-            except:
-                return "something wrong"
-        elif request.form['btn'] == 'post_order':
-            Passenger.pick_up = request.form['pick_up']
-            Passenger.drop_off = request.form['drop_off']
-            return redirect(url_for('order_p', id=id))
-        elif request.form['btn'] == 'post_appointment':
-            Passenger.pick_up = request.form['pick_up']
-            Passenger.drop_off = request.form['drop_off']
-            return redirect(url_for('appointment', id=id))
-
-        return render_template('homepage_passenger.html', tasks=passenger)
     elif request.method == 'POST':
         passenger = Passenger.query.get_or_404(id)
         if(request.form['name'] != ''):

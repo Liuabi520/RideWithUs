@@ -9,8 +9,13 @@
     <h1 style="text-align: center">Finding your order!</h1>
     <table>
         <tr>
+            <td>Order id: </td>
+            <td>{{ tasks.o_id }}</td>
+        </tr>
+
+        <tr>
             <td>Passenger id: </td>
-            <td>{{ tasks.d_id }}</td>
+            <td>{{ tasks.p_id }}</td>
         </tr>
 
         <tr>
@@ -21,6 +26,11 @@
         <tr>
             <td>Passenger dropoff: </td>
             <td>{{ tasks.drop_off }}</td>
+        </tr>
+
+        <tr>
+            <td>Order time: </td>
+            <td>{{ tasks.date_created }}</td>
         </tr>
 
     </table>

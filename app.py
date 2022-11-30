@@ -106,10 +106,14 @@ def homepage_p(id):
     elif request.method=='POST':
         if (request.form['btn'] == 'edit_user_info'):
             passenger = Passenger.query.get_or_404(id)
-            passenger.name = request.form['name']
-            passenger.phoneNumber = request.form['phoneNumber']
-            passenger.address = request.form['address']
-            passenger.card_info = request.form['card_info']
+            if (request.form['name'] != ''):
+                passenger.name = request.form['name']
+            if (request.form['phoneNumber'] != ''):
+                passenger.phoneNumber = request.form['phoneNumber']
+            if (request.form['address'] != ''):
+                passenger.address = request.form['address']
+            if (request.form['card_info'] != ''):
+                passenger.card_info = request.form['card_info']
             try:
                 db.session.commit()
                 flash("updated")
@@ -277,6 +281,13 @@ def appointment(id):
         appointment = Appointment.query.get_or_404(id)
         return render_template('appointment.html', tasks=appointment)
 
+@app.route('/profilePage/<int:id>', methods=['GET'])
+def profilePage(id):
+    if request.method == 'GET':
+        passenger = Passenger.query.get_or_404(id)
+        return render_template('profile.html', tasks=passenger)
+    else:
+        return "something wrong"
 
 if __name__ == "__main__":
     app.app_context().push()

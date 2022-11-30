@@ -1,4 +1,4 @@
-<<<<<<< Updated upstream
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
@@ -84,7 +84,6 @@ def delete(id):
 
 
 if __name__=="__main__":
-=======
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
@@ -260,5 +259,4 @@ def delete(id):
 
 
 if __name__=="__main__":
->>>>>>> Stashed changes
     app.run(debug=True)

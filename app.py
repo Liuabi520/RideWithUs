@@ -222,8 +222,14 @@ def admin():
         login_isDriver = request.form['isDriver']
         if login_isDriver == "yes":
             login_isDriver = True
+            temp = Driver(d_id=login_id)
+            db.session.add(temp)
+            db.session.commit()
         else:
             login_isDriver = False
+            temp = Passenger(d_id=login_id)
+            db.session.add(temp)
+            db.session.commit()
         new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
 
         try:

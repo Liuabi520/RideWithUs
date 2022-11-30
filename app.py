@@ -205,7 +205,7 @@ def appointment(id):
         appointment_pltime = request.form['pltime']
         appointment_ppay = request.form['plpay']
         order = request.form['btn']
-        appoint = request.form['btn']
+        appoint = request.form['btn']j
         if order == "Order Now!":
             new_appointment = Appointment(planned_pickup=appointment_pickup, planned_destination=appointment_dest,
                                           planned_start_time=appointment_order_time,

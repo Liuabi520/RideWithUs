@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>homepage</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">user info</h1>
+    <table>
+        <tr>
+            <td>id: </td>
+            <td>{{ tasks.d_id }}</td>
+        </tr>
+        <tr>
+            <td>name: </td>
+            <td>{{ tasks.name }}</td>
+        </tr>
+        <tr>
+            <td>phone number: </td>
+            <td>{{ tasks.phoneNumber }}</td>
+        </tr>
+        <tr>
+            <td>address: </td>
+            <td>{{ tasks.address }}</td>
+        </tr>
+        <tr>
+            <td>card info: </td>
+            <td>{{ tasks.card_info }}</td>
+        </tr>
+    </table>
+
+    <div class="form">
+        <form action="/homepage_d/{{tasks.d_id}}" method="POST">
+            <tr>
+                name:
+            </tr>
+            <input type="text" name="name"><br>
+            <tr>
+                phone number:
+            </tr>
+            <input type="text" name="phoneNumber"><br>
+            <tr>
+                address:
+            </tr>
+            <input type="text" name="address"><br>
+            <tr>
+                card info:
+            </tr>
+            <input type="text" name="card_info"><br>
+            <div class="form">
+                <input type="submit" name="btn" value="edit_user_info"><br>
+            </div>
+
+            <div class="form">
+                <input type="submit" name = "btn" value="check current order"><br>
+            </div>
+            <div class="form">
+                <input type="submit" name = "btn" value="check future appointments"><br>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

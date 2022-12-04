@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>homepage</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">Finding your order!</h1>
+    <table>
+        <tr>
+            <th>o_id</th>
+            <th>p_id</th>
+            <th>planned pick up</th>
+            <th>planned drop off</th>
+            <th>planned start time</th>
+            <th>planned payment</th>
+        </tr>
+
+        <div class="form">
+            <input type="submit" name="btn" value="Order_by_id">
+        </div>
+
+        <div class="form">
+            <input type="submit" name = "btn" value="Order_by_time">
+        </div>
+
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task.o_id }}</td>
+                <td>{{ task.p_id}}</td>
+                <td>{{ task.planned_pickup}}</td>
+                <td>{{ task.planned_destination}}</td>
+                <td>{{ task.planned_start_time}}</td>
+                <td>{{ task.planned_payment_amount}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+{% endblock %}

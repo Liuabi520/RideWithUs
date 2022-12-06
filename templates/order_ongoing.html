@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>order_ongoing</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <table>
+        <tr>
+            <th>your order is ongoing</th>
+            <th>click the finished button below to indicate your trip is completed</th>
+        </tr>
+    </table>
+
+    <div class="form">
+        <form action="/order_waiting_ongoing" method="POST">
+
+            <input type="submit" value="finished">
+
+        </form>
+    </div>
+</div>
+{% endblock %}

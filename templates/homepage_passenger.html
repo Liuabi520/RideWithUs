@@ -6,34 +6,15 @@
 
 {% block body %}
 <div class="content">
-    <h1 style="text-align: center">user info</h1>
+    <h1 style="text-align: center">Passenger Homepage</h1>
     <table>
         <tr>
             <td>id: </td>
             <td>{{ tasks.d_id }}</td>
         </tr>
-        <tr>
-            <td>name: </td>
-            <td>{{ tasks.name }}</td>
-        </tr>
-        <tr>
-            <td>phone number: </td>
-            <td>{{ tasks.phoneNumber }}</td>
-        </tr>
-        <tr>
-            <td>address: </td>
-            <td>{{ tasks.address }}</td>
-        </tr>
-        <tr>
-            <td>card info: </td>
-            <td>{{ tasks.card_info }}</td>
-        </tr>
-        <tr>
-            <td>balance: </td>
-            <td>{{ tasks.balance }}</td>
-        </tr>
     </table>
 
+    <br>        <br> 
     <div class="form">
         <form action="/homepage_p/{{tasks.d_id}}" method="POST">
             <tr>
@@ -49,16 +30,9 @@
             </tr>
             <input type="text" name="address">
             <tr>
-                Bio:
-            </tr>
-            <input type="text" name="Bio">
-            <tr>
                 card info:
             </tr>
             <input type="text" name="card_info">
-
-            <input type="submit" value="edit_user_info">
-
             <div class="form">
                 <input type="submit" name="btn" value="edit_user_info">
             </div>
@@ -75,17 +49,40 @@
                 <input type="submit" name = "btn" value="post_order">
             </div>
 
-            <div class="form">
-                <input type="submit" name = "btn" value="post_appointment">
-            </div>
+            <br>
+            <tr>
+            Appointment pick up:
+        </tr>
+        <input type="text" name="pick_up_app"><br>
+        <tr>
+            Appointment drop off:
+        </tr>
 
-        </form>
-    </div>
-    <div>
-        <form action="/profilePage/{{tasks.d_id}}">
-            <input type="submit" value="Profile Page" />
-        </form>
-    </div>
 
+        <input type="text" name="drop_off_app"><br>
+            <tr>Start Time:</tr>
+            <input type="text" name="start_time"><br>
+            <tr>How much would you like to pay for this trip?:</tr>
+            <input type="text" name="planned_payment"><br>
+            <input type="submit" name = "btn" value="post_appointment"><br>
+        </div>
+    </form>
+        <div>
+            <form action="/profilePage/{{tasks.d_id}}">
+                <input type="submit" value="Profile Page" />
+            </form>
+        </div>
+        <div>
+            <table>
+            <form action="/order_p/{{tasks.d_id}}">
+                <input type="submit" value="View My Order" />
+            </form>
+            <form action="/appointment/{{tasks.d_id}}">
+                <input type="submit" value="View My Appointment" />
+            </form>
+        </table>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

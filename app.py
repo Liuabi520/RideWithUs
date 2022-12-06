@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-
+import uuid
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
@@ -49,12 +49,6 @@ class Order(db.Model):
     p_id = db.Column(db.Integer, db.ForeignKey('passenger.d_id'))
     pick_up = db.Column(db.String(200), default='')
     drop_off = db.Column(db.String(200), default='')
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    accept = db.Column(db.Boolean, default=False)
-    done = db.Column(db.Boolean, default=False)
-    def __repr__(self):
-        print("HERE")
-        return '<Login %r>' % self.o_id
 
 class Appointment(db.Model):
     a_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -63,8 +57,8 @@ class Appointment(db.Model):
     planned_pickup = db.Column(db.String(200), default='')
     planned_destination = db.Column(db.String(200), default='')
     planned_start_time = db.Column(db.String(200), default='')
-    planned_payment_amount = db.Column(db.String(200), default='')
-
+    planned_payment_amount = db.Column(db.Integer)
+    status = db.Column(db.String(200), default='')
     def __repr__(self):
         return '<Login %r>' % self.a_id
 
@@ -123,19 +117,33 @@ def homepage_p(id):
             except:
                 return "something wrong"
         elif request.form['btn'] == 'post_order':
-            pick_up = request.form['pick_up']
-            drop_off = request.form['drop_off']
-            if(pick_up and drop_off):
-                return redirect(url_for('order_p', id=id, pick_up=pick_up, drop_off=drop_off))
-            else:
-                flash('Error: not enough Order information')
-                return redirect(url_for('homepage_p', id=id))
-
-        elif request.form['btn'] == 'post_appointment':
+            passenger = Passenger.query.get_or_404(id)
             Passenger.pick_up = request.form['pick_up']
             Passenger.drop_off = request.form['drop_off']
-            return redirect(url_for('appointment', id=id))
-
+            new_order = Order(p_id=id, pick_up=request.form['pick_up'], drop_off= request.form['drop_off'], date_created=datetime.now())
+            try:
+                db.session.add(new_order)
+                db.session.commit()
+                flash("you have successfully Post a new order")
+            except Exception as e:
+                flash(str(e))
+            return render_template('homepage_passenger.html', tasks=passenger)
+        elif request.form['btn'] == 'post_appointment':
+            planned_start_time = request.form['start_time']
+            planned_payment_amount = request.form['planned_payment']
+            planned_pickup = request.form['pick_up_app']
+            planned_destination = request.form['drop_off_app']
+            if planned_pickup and planned_destination and planned_start_time and planned_payment_amount:
+                new_appointment = Appointment(p_id=id, planned_start_time=planned_start_time
+                            , planned_payment_amount=planned_payment_amount, planned_pickup=
+                            planned_pickup, planned_destination=planned_destination, status='available')
+                try:
+                    db.session.add(new_appointment)
+                    db.session.commit()
+                    flash("Inserted a new appointment")
+                except Exception as e:
+                    flash(e)
+            return render_template('homepage_passenger.html', tasks=id)
 
 @app.route('/homepage_d/<int:id>',methods=['POST', 'GET'])
 def homepage_d(id):
@@ -162,22 +170,9 @@ def homepage_d(id):
 @app.route('/order_p/<int:id>/<pick_up>/<drop_off>', methods=['POST', 'GET'])
 def order_p(id, pick_up, drop_off):
     if request.method == 'GET':
-        order_pickup = pick_up
-        order_destination = drop_off
-        new_order = Order(p_id=id, pick_up=order_pickup, drop_off=order_destination)
-        app.logger.info(new_order.o_id)
-        try:
-            db.session.add(new_order)
-            db.session.commit()
-            app.logger.info(new_order.o_id)
-            flash("you have successfully created your order")
+        orders = Order.query.filter_by(p_id=id).all()
+        return render_template('order_passenger.html', tasks=orders,id = id)
 
-        except:
-            flash("wrong order id")
-            return redirect("/homepage_u")
-
-        # new_order = Order.query.order_by(Order.date_created).all()
-        return render_template('order_passenger.html', tasks=new_order)
 
 @app.route('/order_d/<int:id>', methods=['POST', 'GET'])
 def order_d(id):
@@ -195,10 +190,10 @@ def order_d(id):
         elif (request.form['btn'] == 'Order_by_drop_off'):
             orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(Order.drop_off).all()
             return render_template('order_driver.html', tasks=orders, driver=driver)
-
     else:
         orders = Order.query.filter(Order.accept == False).filter(Order.done == False).all()
         return render_template('order_driver.html', tasks=orders, driver = driver)
+
 
 @app.route('/accept_order/<d_id>/<o_id>', methods=['POST'])
 def accept_order(d_id, o_id):
@@ -211,6 +206,8 @@ def accept_order(d_id, o_id):
             flash("Accept successfully")
             orders = Order.query.filter(Order.accept == False).filter(Order.done == False).all()
             return render_template('order_driver.html', tasks=orders, driver=driver)
+
+
 
 @app.route("/register", methods=['POST', 'GET'])
 def index():
@@ -252,8 +249,14 @@ def admin():
         login_isDriver = request.form['isDriver']
         if login_isDriver == "yes":
             login_isDriver = True
+            temp = Driver(d_id=login_id)
+            db.session.add(temp)
+            db.session.commit()
         else:
             login_isDriver = False
+            temp = Passenger(d_id=login_id)
+            db.session.add(temp)
+            db.session.commit()
         new_login = User(id=login_id, pw=login_pw, isDriver=login_isDriver)
 
         try:
@@ -280,7 +283,17 @@ def delete(id):
         return redirect('/admin')
     except:
         return 'There was a problem deleting that registration'
-
+@app.route('/deleteOrder/<int:Uid>/<int:id>',methods=['GET'])
+def deleteOrder(Uid,id):
+    # get the value by id, if not found then 404
+    app.logger.info(Uid)
+    order = Order.query.get_or_404(id)
+    try:
+        db.session.delete(order)
+        db.session.commit()
+        return redirect('/order_p/'+str(Uid))
+    except:
+        return 'There was a problem deleting that registration'
 
 @app.route('/appointment/<int:id>', methods=['POST', 'GET'])
 def appointment(id):
@@ -310,6 +323,18 @@ def appointment(id):
     else:
         appointment = Appointment.query.get_or_404(id)
         return render_template('appointment.html', tasks=appointment)
+
+@app.route('/deleteAppointment/<int:Uid>/<int:id>',methods=['GET'])
+def deleteAppointment(Uid,id):
+    # get the value by id, if not found then 404
+    app.logger.info(Uid)
+    appoint = Appointment.query.get_or_404(id)
+    try:
+        db.session.delete(appoint)
+        db.session.commit()
+        return redirect('/appointment/'+str(Uid))
+    except:
+        return 'There was a problem deleting that registration'
 
 @app.route('/profilePage/<int:id>', methods=['GET'])
 def profilePage(id):

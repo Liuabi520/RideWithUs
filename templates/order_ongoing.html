@@ -14,10 +14,15 @@
     </table>
 
     <div class="form">
-        <form action="/order_waiting_ongoing" method="POST">
-
+        <form action="/order_waiting_ongoing/{{o_id}}/{{u_id}}" method="POST">
             <input type="submit" value="finished">
 
+        </form>
+    </div>
+
+    <div class="form">
+        <form action="/view_driver_inOrder/{{o_id}}" method="POST">
+            <input type="submit" value="ViewDriverInfo" name="btn1">
         </form>
     </div>
 </div>

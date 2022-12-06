@@ -6,14 +6,7 @@
 
 {% block body %}
 <div class="content">
-    <h1 style="text-align: center">Finding your order!</h1>
-    <table>
-        <tr>
-            <th>pick up</th>
-            <th>drop off</th>
-            <th>posted time</th>
-        </tr>
-    </table>
+    <h1 style="text-align: center">Check orders!</h1>
 
     <div class="form">
         <form action="/order_d/{{driver.d_id}}" method="POST">
@@ -34,16 +27,30 @@
                 <input type="submit" name="btn" value="Order_by_drop_off">
             </div>
 
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_payment">
+            </div>
 
+            <div class="form">
+                <input type="submit" name="btn" value="refresh">
+            </div>
         </form>
     </div>
 
     <table>
+        <tr>
+            <th>pick up</th>
+            <th>drop off</th>
+            <th>posted time</th>
+            <th>payment amount</th>
+        </tr>
+
         {% for task in tasks %}
             <tr>
                 <td>{{ task.pick_up}}</td>
                 <td>{{ task.drop_off}}</td>
                 <td>{{ task.date_created}}</td>
+                <td>{{ task.payment_amount}}</td>
                 <td>
                     <form action="/accept_order/{{driver.d_id}}/{{task.o_id}}" method="POST" >
                      <input type="submit" value="Accept" name="btn1">
@@ -52,7 +59,6 @@
             </tr>
         {% endfor %}
     </table>
-
 
 </div>
 {% endblock %}

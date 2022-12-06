@@ -49,10 +49,6 @@ class Order(db.Model):
     p_id = db.Column(db.Integer, db.ForeignKey('passenger.d_id'))
     pick_up = db.Column(db.String(200), default='')
     drop_off = db.Column(db.String(200), default='')
-    date_created = db.Column(db.String(200), default='')
-
-    def __repr__(self):
-        return '<Login %r>' % self.a_id
 
 class Appointment(db.Model):
     a_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -148,6 +144,7 @@ def homepage_p(id):
                 except Exception as e:
                     flash(e)
             return render_template('homepage_passenger.html', tasks=id)
+
 @app.route('/homepage_d/<int:id>',methods=['POST', 'GET'])
 def homepage_d(id):
     if request.method == 'GET':
@@ -166,24 +163,51 @@ def homepage_d(id):
                 return render_template('homepage_driver.html', tasks=driver)
             except:
                 return "something wrong"
-        elif (request.form['btn'] == 'check_appointment'):
+
+        elif (request.form['btn'] == 'check_order'):
             return redirect(url_for('order_d', id=id))
 
-@app.route('/order_p/<int:id>', methods=['POST', 'GET'])
-def order_p(id):
+@app.route('/order_p/<int:id>/<pick_up>/<drop_off>', methods=['POST', 'GET'])
+def order_p(id, pick_up, drop_off):
     if request.method == 'GET':
         orders = Order.query.filter_by(p_id=id).all()
         return render_template('order_passenger.html', tasks=orders,id = id)
 
+
 @app.route('/order_d/<int:id>', methods=['POST', 'GET'])
 def order_d(id):
-    if request.method == 'GET':
-        orders = Order.query.filter().limit(5).all()
-        return render_template('order_driver.html', tasks=orders)
-    elif request.method == 'POST':
-        if (request.form['btn'] == 'Order_by_id'):
-            orders = Order.query.order_by(Order.o_id).all()
-            return render_template('order_driver.html', tasks=orders)
+    driver = Driver.query.get_or_404(id)
+    if request.method == 'POST':
+        if (request.form['btn'] == 'Order_by_early'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(Order.date_created).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'Order_by_latest'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(Order.date_created.desc()).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'Order_by_pick_up'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(Order.pick_up).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'Order_by_drop_off'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(Order.drop_off).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+    else:
+        orders = Order.query.filter(Order.accept == False).filter(Order.done == False).all()
+        return render_template('order_driver.html', tasks=orders, driver = driver)
+
+
+@app.route('/accept_order/<d_id>/<o_id>', methods=['POST'])
+def accept_order(d_id, o_id):
+    driver = Driver.query.get_or_404(d_id)
+    if request.method == 'POST':
+        if (request.form['btn1'] == 'Accept'):
+            sel_order = Order.query.get_or_404(o_id)
+            sel_order.d_id = d_id
+            sel_order.accept = True
+            flash("Accept successfully")
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+
+
 
 @app.route("/register", methods=['POST', 'GET'])
 def index():
@@ -271,6 +295,34 @@ def deleteOrder(Uid,id):
     except:
         return 'There was a problem deleting that registration'
 
+@app.route('/appointment/<int:id>', methods=['POST', 'GET'])
+def appointment(id):
+    if request.method == 'POST':
+        appointment_pickup = request.form['pickup']
+        appointment_dest = request.form['destination']
+        appointment_order_time = str(datetime.now())
+        appointment_pltime = request.form['pltime']
+        appointment_ppay = request.form['plpay']
+        order = request.form['btn']
+        appoint = request.form['btn']
+        if order == "Order Now!":
+            new_appointment = Appointment(planned_pickup=appointment_pickup, planned_destination=appointment_dest,
+                                          planned_start_time=appointment_order_time,
+                                          planned_payment_amount=appointment_ppay, p_id=id)
+        elif appoint == "Make an Appointment now!":
+            new_appointment = Appointment(planned_pickup=appointment_pickup, planned_destination=appointment_dest,
+                                          planned_start_time=appointment_pltime,
+                                          planned_payment_amount=appointment_ppay, p_id=id)
+        try:
+            db.session.add(new_appointment)
+            db.session.commit()
+            flash("updated")
+            return render_template('appointment.html', tasks=new_appointment)
+        except:
+            return render_template('appointment.html', tasks=new_appointment)
+    else:
+        appointment = Appointment.query.get_or_404(id)
+        return render_template('appointment.html', tasks=appointment)
 
 @app.route('/deleteAppointment/<int:Uid>/<int:id>',methods=['GET'])
 def deleteAppointment(Uid,id):
@@ -283,12 +335,6 @@ def deleteAppointment(Uid,id):
         return redirect('/appointment/'+str(Uid))
     except:
         return 'There was a problem deleting that registration'
-@app.route('/appointment/<int:id>', methods=['POST', 'GET'])
-def appointment(id):
-    if request.method == 'GET':
-        appointments = Appointment.query.filter_by(p_id=id).all()
-    return render_template('appointment.html', tasks=appointments,id = id)
-    
 
 @app.route('/profilePage/<int:id>', methods=['GET'])
 def profilePage(id):

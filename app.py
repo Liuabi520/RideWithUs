@@ -295,6 +295,24 @@ def profilePage(id):
     else:
         return "something wrong"
 
+
+@app.route('/order_waiting_ongoing/<int:o_id>/<int:u_id>',methods=['POST', 'GET'])
+def order_w_o(o_id, u_id):
+    order = Order.query.get_or_404(o_id)
+    if (request.method == 'GET'):
+        if order.d_id == -1:
+            return render_template('order_waiting.html')
+        else:
+            return render_template('order_ongoing.html')
+    else:
+        flash("your order has completed")
+        user = User.query.get_or_404(u_id)
+        if user.isDriver:
+            return redirect(url_for('homepage_d', id=u_id))
+        else:
+            return redirect(url_for('homepage_p', id=u_id))
+
+
 if __name__ == "__main__":
     app.app_context().push()
     db.create_all()

@@ -1,34 +1,61 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>homepage</title>
+<title>order driver</title>
 {% endblock %}
 
 {% block body %}
 <div class="content">
-    <h1 style="text-align: center">Finding your order!</h1>
+    <h1 style="text-align: center">Check orders!</h1>
+
+    <div class="form">
+        <form action="/order_d/{{driver.d_id}}" method="POST">
+
+            <div class="form">
+                <input type="submit" name = "btn" value="Order_by_early">
+            </div>
+
+            <div class="form">
+                <input type="submit" name = "btn" value="Order_by_latest">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_pick_up">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_drop_off">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_payment">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="refresh">
+            </div>
+        </form>
+    </div>
+
     <table>
         <tr>
-            <th>o_id</th>
-            <th>p_id</th>
-            <th>pick_up</th>
-            <th>drop_off</th>
+            <th>pick up</th>
+            <th>drop off</th>
+            <th>posted time</th>
+            <th>payment amount</th>
         </tr>
-
-        <div class="form">
-            <input type="submit" name="btn" value="Order_by_id">
-        </div>
-
-        <div class="form">
-            <input type="submit" name = "btn" value="Order_by_time">
-        </div>
 
         {% for task in tasks %}
             <tr>
-                <td>{{ task.o_id }}</td>
-                <td>{{ task.p_id}}</td>
                 <td>{{ task.pick_up}}</td>
                 <td>{{ task.drop_off}}</td>
+                <td>{{ task.date_created}}</td>
+                <td>{{ task.payment_amount}}</td>
+                <td>
+                    <form action="/accept_order/{{driver.d_id}}/{{task.o_id}}" method="POST" >
+                     <input type="submit" value="Accept" name="btn1">
+                    </form>
+                </td>
             </tr>
         {% endfor %}
     </table>

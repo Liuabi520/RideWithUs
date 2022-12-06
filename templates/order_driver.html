@@ -11,10 +11,8 @@
         <tr>
             <th>o_id</th>
             <th>p_id</th>
-            <th>planned pick up</th>
-            <th>planned drop off</th>
-            <th>planned start time</th>
-            <th>planned payment</th>
+            <th>pick_up</th>
+            <th>drop_off</th>
         </tr>
 
         <div class="form">
@@ -29,15 +27,9 @@
             <tr>
                 <td>{{ task.o_id }}</td>
                 <td>{{ task.p_id}}</td>
-                <td>{{ task.planned_pickup}}</td>
-                <td>{{ task.planned_destination}}</td>
-                <td>{{ task.planned_start_time}}</td>
-                <td>{{ task.planned_payment_amount}}</td>
-
+                <td>{{ task.pick_up}}</td>
+                <td>{{ task.drop_off}}</td>
             </tr>
-        <div class="form">
-            <input type="submit" name = "btn" value="Get this appointment!">
-        </div>
         {% endfor %}
     </table>
 

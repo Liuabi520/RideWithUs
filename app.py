@@ -64,8 +64,8 @@ class Appointment(db.Model):
     planned_pickup = db.Column(db.String(200), default='')
     planned_destination = db.Column(db.String(200), default='')
     planned_start_time = db.Column(db.String(200), default='')
-    planned_payment_amount = db.Column(db.String(200), default='')
-
+    planned_payment_amount = db.Column(db.Integer)
+    status = db.Column(db.String(200), default='')
     def __repr__(self):
         return '<Login %r>' % self.a_id
 
@@ -133,10 +133,11 @@ def homepage_p(id):
             planned_payment_amount = request.form['planned_payment']
             planned_pickup = request.form['pick_up_app']
             planned_destination = request.form['drop_off_app']
+            status = 'available'
             if planned_pickup and planned_destination and planned_start_time and planned_payment_amount:
                 return redirect(url_for('appointment', id=id, planned_start_time=planned_start_time
                                         , planned_payment_amount=planned_payment_amount, planned_pick_up=
-                                        planned_pickup, planned_destination=planned_destination))
+                                        planned_pickup, planned_destination=planned_destination, status = status))
 
 
 @app.route('/homepage_d/<int:id>', methods=['POST', 'GET'])
@@ -197,6 +198,18 @@ def order_d(id):
 def appointment_d(id):
     if request.method == 'GET':
         appointments = Appointment.query.filter().limit(5).all()
+        if request.form['btn'] == 'Get this appointment!':
+            cursor = db.cursor()
+            update_sql = "UPDATE status SET status='Not available'"
+            try:
+                # 执行SQL语句
+                cursor.execute(update_sql)
+                # 提交到数据库执行
+                db.commit()  # 数据的改变需要执行这个命令
+            except:
+                print("更新失败！")
+
+                db.rollback()
         return render_template('appointment_driver.html', tasks=appointments)
     elif request.method == 'POST':
         if (request.form['btn'] == 'Order_by_id'):
@@ -281,13 +294,14 @@ def delete(id):
 
 
 @app.route(
-    '/appointment/<int:id>/<planned_start_time>/<planned_payment_amount>/<planned_pick_up>/<planned_destination>',
+    '/appointment/<int:id>/<planned_start_time>/<planned_payment_amount>/<planned_pick_up>/<planned_destination'
+    '>/<status>',
     methods=['POST', 'GET'])
-def appointment(id, planned_start_time, planned_payment_amount, planned_pick_up, planned_destination):
+def appointment(id, planned_start_time, planned_payment_amount, planned_pick_up, planned_destination, status):
     if request.method == 'GET':
         new_appointment = Appointment(p_id=id, planned_start_time=planned_start_time
                                       , planned_payment_amount=planned_payment_amount, planned_pickup=
-                                      planned_pick_up, planned_destination=planned_destination)
+                                      planned_pick_up, planned_destination=planned_destination, status=status)
         app.logger.info(new_appointment.a_id)
         try:
             db.session.add(new_appointment)

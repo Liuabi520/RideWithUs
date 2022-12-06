@@ -350,9 +350,9 @@ def order_w_o(o_id, u_id):
     order = Order.query.get_or_404(o_id)
     if (request.method == 'GET'):
         if order.d_id == -1:
-            return render_template('order_waiting.html')
+            return render_template('order_waiting.html', o_id=o_id, u_id=u_id)
         else:
-            return render_template('order_ongoing.html')
+            return render_template('order_ongoing.html', o_id=o_id, u_id=u_id)
     else:
         flash("your order has completed")
         user = User.query.get_or_404(u_id)

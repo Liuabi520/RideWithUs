@@ -7,8 +7,9 @@
 {% block body %}
 <div class="content">
     <h1 style="text-align: center">Appointment Info</h1>
-    <table>
-        {% for task in tasks %}
+    {% for task in tasks %}
+    <table border="1">
+        <br>
         <tr>
             <td>appointment_id: </td>
             <td>{{ task.a_id }}</td>
@@ -37,8 +38,8 @@
             <td>Planned payment: </td>
             <td>{{ task.planned_payment_amount }}</td>
         </tr>
-        {% endfor %}
     </table>
+    {% endfor %}
     <center>     <form action="/homepage_d/{{id}}">
         <input type="submit" value="Go Back to Main Page" />
     </form>  </center>

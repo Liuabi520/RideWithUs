@@ -467,6 +467,13 @@ def profilePage_driver(id):
     else:
         return "something wrong"
 
+@app.route('/Myappointment_d/<int:id>', methods=['GET'])
+def Appointment_driver(id):
+    if request.method == 'GET':
+        appointments = Appointment.query.filter_by(d_id=id).all()
+        return render_template('MyAppointment_d.html', tasks=appointments, id = id)
+    else:
+        return "something wrong"
 
 @app.route('/order_waiting_ongoing/<int:o_id>/<int:u_id>', methods=['POST', 'GET'])
 def order_w_o(o_id, u_id):

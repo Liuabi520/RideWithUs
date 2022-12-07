@@ -49,7 +49,7 @@
                 <td>{{ task.planned_start_time}}</td>
                 <td>{{ task.planned_payment_amount}}</td>
                 <td>
-                    <form action="/accept_appointment/{{driver.d_id}}/{{task.a_id}}" method="POST" >
+                    <form action="/appointment_d/{{driver.d_id}}" method="GET" >
                      <input type="submit" value="Get this appointment" name="btn1">
                     </form>
                 </td>

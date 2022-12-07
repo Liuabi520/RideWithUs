@@ -2,6 +2,10 @@ from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+<<<<<<< Updated upstream
+=======
+import uuid
+>>>>>>> Stashed changes
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -46,10 +50,19 @@ class Driver(db.Model):
 
 class Order(db.Model):
     o_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    d_id = db.Column(db.Integer, db.ForeignKey('driver.d_id'))
+    d_id = db.Column(db.Integer, db.ForeignKey('driver.d_id'), default=-1)
     p_id = db.Column(db.Integer, db.ForeignKey('passenger.d_id'))
     pick_up = db.Column(db.String(200), default='')
     drop_off = db.Column(db.String(200), default='')
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    accept = db.Column(db.Boolean, default=False)
+    done = db.Column(db.Boolean, default=False)
+    payment_amount = db.Column(db.Integer)
+
+    def __repr__(self):
+        print("HERE")
+        return '<Login %r>' % self.o_id
+
 
     # date_created = db.Column(db.String(200), default='')
 
@@ -65,7 +78,9 @@ class Appointment(db.Model):
     planned_destination = db.Column(db.String(200), default='')
     planned_start_time = db.Column(db.String(200), default='')
     planned_payment_amount = db.Column(db.Integer)
-    status = db.Column(db.String(200), default='')
+    accept = db.Column(db.Boolean, default=False)
+    done = db.Column(db.Boolean, default=False)
+
     def __repr__(self):
         return '<Login %r>' % self.a_id
 
@@ -105,7 +120,17 @@ def login():
 def homepage_p(id):
     if request.method == 'GET':
         passenger = Passenger.query.get_or_404(id)
+<<<<<<< Updated upstream
         return render_template('homepage_passenger.html', tasks=passenger)
+=======
+        # Not sure if added function: check if driver already have an order
+        order = Order.query.filter(Order.p_id == id).filter(Order.done == False).all()
+        if (order):
+            flash("You have an ongoing order")
+            return redirect(url_for('order_w_o', o_id=order[0].o_id, u_id=order[0].p_id))
+        else:
+            return render_template('homepage_passenger.html', tasks=passenger)
+>>>>>>> Stashed changes
     elif request.method == 'POST':
         if (request.form['btn'] == 'edit_user_info'):
             passenger = Passenger.query.get_or_404(id)
@@ -124,27 +149,65 @@ def homepage_p(id):
             except:
                 return "something wrong"
         elif request.form['btn'] == 'post_order':
+<<<<<<< Updated upstream
             pick_up = request.form['pick_up']
             drop_off = request.form['drop_off']
             if pick_up and drop_off:
                 return redirect(url_for('order_p', id=id, pick_up=pick_up, drop_off=drop_off))
+=======
+            passenger = Passenger.query.get_or_404(id)
+            Passenger.pick_up = request.form['pick_up']
+            Passenger.drop_off = request.form['drop_off']
+            payment = request.form['payment_amount']
+            new_order = Order(p_id=id, pick_up=request.form['pick_up'], drop_off=request.form['drop_off'],
+                              date_created=datetime.now(), payment_amount=payment)
+            try:
+                db.session.add(new_order)
+                db.session.commit()
+                flash("you have successfully Post a new order")
+            except Exception as e:
+                flash(str(e))
+            return redirect(url_for('order_w_o', o_id=new_order.o_id, u_id=new_order.p_id))
+>>>>>>> Stashed changes
         elif request.form['btn'] == 'post_appointment':
+            passenger = Passenger.query.get_or_404(id)
             planned_start_time = request.form['start_time']
             planned_payment_amount = request.form['planned_payment']
             planned_pickup = request.form['pick_up_app']
             planned_destination = request.form['drop_off_app']
+<<<<<<< Updated upstream
             status = 'available'
             if planned_pickup and planned_destination and planned_start_time and planned_payment_amount:
                 return redirect(url_for('appointment', id=id, planned_start_time=planned_start_time
                                         , planned_payment_amount=planned_payment_amount, planned_pick_up=
                                         planned_pickup, planned_destination=planned_destination, status = status))
+=======
+
+            new_appointment = Appointment(p_id=id, planned_start_time=planned_start_time
+                                        , planned_payment_amount=planned_payment_amount, planned_pickup=
+                                        planned_pickup, planned_destination=planned_destination)
+            try:
+                db.session.add(new_appointment)
+                db.session.commit()
+                flash("Inserted a new appointment")
+            except Exception as e:
+                flash(e)
+        return render_template('homepage_passenger.html', tasks=passenger)
+>>>>>>> Stashed changes
 
 
 @app.route('/homepage_d/<int:id>', methods=['POST', 'GET'])
 def homepage_d(id):
     if request.method == 'GET':
         driver = Driver.query.get_or_404(id)
-        return render_template('homepage_driver.html', tasks=driver)
+        # Not sure if added function: check if driver already have an order
+        order = Order.query.filter(Order.d_id == id).filter(Order.done == False).all()
+        if(order):
+            flash("you have an ongoing order")
+            return render_template('order_waiting_driver.html', o_id=order[0].o_id, u_id=id)
+        else:
+            return render_template('homepage_driver.html', tasks=driver)
+
     elif request.method == 'POST':
         if (request.form['btn'] == 'edit_user_info'):
             driver = Driver.query.get_or_404(id)
@@ -158,15 +221,25 @@ def homepage_d(id):
                 return render_template('homepage_driver.html', tasks=driver)
             except:
                 return "something wrong"
+<<<<<<< Updated upstream
         elif (request.form['btn'] == 'check current order'):
+=======
+
+        elif (request.form['btn'] == 'check_appointment'):
+            return redirect(url_for('appointment_d', id=id))
+
+        elif (request.form['btn'] == 'check_order'):
+>>>>>>> Stashed changes
             return redirect(url_for('order_d', id=id))
         elif request.form['btn'] == 'check future appointments':
             return redirect(url_for('appointment_d', id=id))
 
 
-@app.route('/order_p/<int:id>/<pick_up>/<drop_off>', methods=['POST', 'GET'])
-def order_p(id, pick_up, drop_off):
+
+@app.route('/order_p/<int:id>', methods=['POST', 'GET'])
+def order_p(id):
     if request.method == 'GET':
+<<<<<<< Updated upstream
         new_order = Order(p_id=id, pick_up=pick_up, drop_off=drop_off)
         app.logger.info(new_order.o_id)
         try:
@@ -181,10 +254,15 @@ def order_p(id, pick_up, drop_off):
 
         # new_order = Order.query.order_by(Order.date_created).all()
         return render_template('order_passenger.html', tasks=new_order)
+=======
+        orders = Order.query.filter_by(p_id=id).all()
+        return render_template('order_passenger.html', tasks=orders, id=id)
+>>>>>>> Stashed changes
 
 
 @app.route('/order_d/<int:id>', methods=['POST', 'GET'])
 def order_d(id):
+<<<<<<< Updated upstream
     if request.method == 'GET':
         orders = Order.query.filter().limit(5).all()
         return render_template('order_driver.html', tasks=orders)
@@ -215,6 +293,74 @@ def appointment_d(id):
         if (request.form['btn'] == 'Order_by_id'):
             appointments = Appointment.query.order_by(Order.o_id).all()
             return render_template('appointment_driver.html', tasks=appointments)
+=======
+    driver = Driver.query.get_or_404(id)
+    if request.method == 'POST':
+        if (request.form['btn'] == 'Order_by_early'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(
+                Order.date_created).limit(7).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'Order_by_latest'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(
+                Order.date_created.desc()).limit(7).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'Order_by_pick_up'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(
+                Order.pick_up).limit(7).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'Order_by_drop_off'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(
+                Order.drop_off).limit(7).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'Order_by_payment'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(
+                Order.payment_amount.desc()).limit(7).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+        elif (request.form['btn'] == 'refresh'):
+            orders = Order.query.filter(Order.accept == False).filter(Order.done == False).order_by(
+                Order.date_created).limit(7).all()
+            return render_template('order_driver.html', tasks=orders, driver=driver)
+    else:
+        orders = Order.query.filter(Order.accept == False).filter(Order.done == False).limit(7).all()
+        return render_template('order_driver.html', tasks=orders, driver=driver)
+
+
+@app.route('/accept_order/<d_id>/<o_id>', methods=['POST'])
+def accept_order(d_id, o_id):
+    driver = Driver.query.get_or_404(d_id)
+    if request.method == 'POST':
+        if (request.form['btn1'] == 'Accept'):
+            order = Order.query.filter(Order.o_id == o_id).all()
+            if order:
+                sel_order = Order.query.get_or_404(o_id)
+                sel_order.d_id = d_id
+                sel_order.accept = True
+                db.session.commit()
+                flash("Accept successfully")
+                return redirect(url_for('order_wo_d', o_id=o_id, u_id=d_id))
+            else:
+                flash("This order has been canceled")
+                orders = Order.query.filter(Order.accept == False).filter(Order.done == False).limit(7).all()
+                return render_template('order_driver.html', tasks=orders, driver=driver)
+
+@app.route('/cancel_order/<p_id>/<o_id>', methods=['POST'])
+def cancel_order(p_id, o_id):
+    if request.method == 'POST':
+        if (request.form['btn1'] == 'Cancel'):
+            sel_order = Order.query.get_or_404(o_id)
+            db.session.delete(sel_order)
+            db.session.commit()
+            flash("Cancel Order successfully")
+            return redirect(url_for('homepage_p', id=p_id))
+
+@app.route('/view_driver_inOrder/<o_id>', methods=['POST'])
+def view_driver_inOrder(o_id):
+    if request.method == 'POST':
+        if (request.form['btn1'] == 'ViewDriverInfo'):
+            sel_order = Order.query.get_or_404(o_id)
+            driver_id = sel_order.d_id
+            return redirect(url_for('profilePage', id=driver_id))
+>>>>>>> Stashed changes
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -291,6 +437,7 @@ def delete(id):
         return redirect('/admin')
     except:
         return 'There was a problem deleting that registration'
+<<<<<<< Updated upstream
 
 
 @app.route(
@@ -316,6 +463,93 @@ def appointment(id, planned_start_time, planned_payment_amount, planned_pick_up,
         # new_order = Order.query.order_by(Order.date_created).all()
         return render_template('appointment.html', tasks=new_appointment)
 
+=======
+
+
+@app.route('/deleteOrder/<int:Uid>/<int:id>', methods=['GET'])
+def deleteOrder(Uid, id):
+    # get the value by id, if not found then 404
+    app.logger.info(Uid)
+    order = Order.query.get_or_404(id)
+    try:
+        db.session.delete(order)
+        db.session.commit()
+        return redirect('/order_p/' + str(Uid))
+    except:
+        return 'There was a problem deleting that registration'
+
+
+@app.route('/appointment/<int:id>', methods=['POST', 'GET'])
+def appointment(id):
+    if request.method == 'GET':
+        appointments = Appointment.query.filter_by(p_id=id).all()
+    return render_template('appointment.html', tasks=appointments, id=id)
+
+@app.route('/appointment_d/<int:id>', methods=['POST', 'GET'])
+def appointment_d(id):
+    driver = Driver.query.get_or_404(id)
+    if request.method == 'POST':
+        if (request.form['btn'] == 'Order_by_early'):
+            appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
+                Appointment.planned_start_time).limit(7).all()
+            return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+        elif (request.form['btn'] == 'Order_by_latest'):
+            appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
+                Appointment.planned_start_time.desc()).limit(7).all()
+            return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+        elif (request.form['btn'] == 'Order_by_pick_up'):
+            appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
+                Appointment.pick_up).limit(7).all()
+            return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+        elif (request.form['btn'] == 'Order_by_drop_off'):
+            appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
+                Appointment.drop_off).limit(7).all()
+            return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+        elif (request.form['btn'] == 'Order_by_payment'):
+            appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
+                Appointment.payment_amount.desc()).limit(7).all()
+            return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+        elif (request.form['btn'] == 'refresh'):
+            appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
+                Appointment.planned_start_time).limit(7).all()
+            return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+    else:
+        appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).limit(7).all()
+        return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+
+
+@app.route('/accept_appointment/<d_id>/<a_id>', methods=['POST'])
+def accept_appointment(d_id, a_id):
+    driver = Driver.query.get_or_404(d_id)
+    if request.method == 'POST':
+        if request.form['btn1'] == 'Get this appointment':
+            appointment = Appointment.query.filter(Appointment.a_id == a_id).all()
+            if appointment:
+                sel_app = Appointment.query.get_or_404(a_id)
+                sel_app.d_id = d_id
+                sel_app.accept = True
+                db.session.commit()
+                flash("Accept successfully")
+                return redirect(url_for('appointment_wo_d', a_id=a_id, u_id=d_id))
+            else:
+                flash("This order has been canceled")
+                appointments = Order.query.filter(Order.accept == False).filter(Order.done == False).limit(7).all()
+                return render_template('appointment_driver.html', tasks=appointments, driver=driver)
+
+
+@app.route('/deleteAppointment/<int:Uid>/<int:id>', methods=['GET'])
+def deleteAppointment(Uid, id):
+    # get the value by id, if not found then 404
+    app.logger.info(Uid)
+    appoint = Appointment.query.get_or_404(id)
+    try:
+        db.session.delete(appoint)
+        db.session.commit()
+        return redirect('/appointment/' + str(Uid))
+    except:
+        return 'There was a problem deleting that registration'
+>>>>>>> Stashed changes
+
 
 @app.route('/profilePage/<int:id>', methods=['GET'])
 def profilePage(id):
@@ -326,6 +560,48 @@ def profilePage(id):
         return "something wrong"
 
 
+<<<<<<< Updated upstream
+=======
+@app.route('/order_waiting_ongoing/<int:o_id>/<int:u_id>', methods=['POST', 'GET'])
+def order_w_o(o_id, u_id):
+    order = Order.query.get_or_404(o_id)
+    if (request.method == 'GET'):
+        if order.d_id == -1:
+            return render_template('order_waiting.html', o_id=o_id, u_id=u_id)
+        else:
+            return render_template('order_ongoing.html', o_id=o_id, u_id=u_id)
+    else:
+        order.done = True
+        db.session.commit()
+        flash("your order has completed")
+        user = User.query.get_or_404(u_id)
+        if user.isDriver:
+            return redirect(url_for('homepage_d', id=u_id))
+        else:
+            return redirect(url_for('homepage_p', id=u_id))
+
+@app.route('/order_w_o_driver/<int:o_id>/<int:u_id>', methods=['GET'])
+def order_wo_d(o_id, u_id):
+    order = Order.query.get_or_404(o_id)
+    if (request.method == 'GET'):
+        if order.done == False:
+            return render_template('order_waiting_driver.html', o_id=o_id, u_id=u_id)
+        else:
+            flash("order complete!")
+            return redirect(url_for('homepage_d', id=u_id))
+
+@app.route('/appointment_w_o_driver/<int:a_id>/<int:u_id>', methods=['GET'])
+def appointment_wo_d(a_id, u_id):
+    appointment = Appointment.query.get_or_404(a_id)
+    if (request.method == 'GET'):
+        if appointment.done == False:
+            return render_template('appointment_waiting_driver.html', a_id=a_id, u_id=u_id)
+        else:
+            flash("appointment complete!")
+            return redirect(url_for('homepage_d', id=u_id))
+
+
+>>>>>>> Stashed changes
 if __name__ == "__main__":
     app.app_context().push()
     db.create_all()

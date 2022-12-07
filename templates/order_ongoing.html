@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>order_ongoing</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <table>
+        <tr>
+            <th>your order is ongoing</th>
+            <th>click the finished button below to indicate your trip is completed</th>
+        </tr>
+    </table>
+
+    <div class="form">
+        <form action="/order_waiting_ongoing/{{o_id}}/{{u_id}}" method="POST">
+            <input type="submit" value="finished">
+
+        </form>
+    </div>
+
+    <div class="form">
+        <form action="/view_driver_inOrder/{{o_id}}" method="POST">
+            <input type="submit" value="ViewDriverInfo" name="btn1">
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<meta http-equiv="refresh" content="3">
+<title>registration</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">waiting for a driver</h1>
+    <table>
+        <tr>
+            <th>your order has published</th>
+            <th>waiting for a driver</th>
+
+        </tr>
+    </table>
+    <form action="/cancel_order/{{u_id}}/{{o_id}}" method="POST" >
+        <input type="submit" value="Cancel" name="btn1">
+    </form>
+</div>
+{% endblock %}

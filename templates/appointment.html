@@ -36,12 +36,19 @@
             <td>Planned payment: </td>
             <td>{{ tasks.planned_payment_amount }}</td>
         </tr>
+<<<<<<< Updated upstream
         <tr>
             <td>Current status for driver: </td>
             <td>{{ tasks.status }}</td>
         </tr>
 
 
+=======
+        <tr><td>    <form action="/deleteAppointment/{{task.p_id}}/{{task.a_id}}">
+            <input type="submit" value="Delete Appointment" />
+        </form></td></tr>
+        {% endfor %}
+>>>>>>> Stashed changes
     </table>
     </div>
 {% endblock %}

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {% extends 'base.html' %}
 
 {% block head %}
@@ -36,4 +37,55 @@
     </table>
 
 </div>
+=======
+{% extends 'base.html' %}
+
+{% block head %}
+<title>homepage</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">Finding your order!</h1>
+    <table>
+        {% for task in tasks %}
+        <div>
+        <tr>
+            <td>Order id: </td>
+            <td>{{ task.o_id }}</td>
+        </tr>
+
+        <tr>
+            <td>Passenger id: </td>
+            <td>{{ task.p_id }}</td>
+        </tr>
+
+        <tr>
+            <td>Passenger pickup: </td>
+            <td>{{ task.pick_up }}</td>
+        </tr>
+
+        <tr>
+            <td>Passenger dropoff: </td>
+            <td>{{ task.drop_off }}</td>
+        </tr>
+
+        <tr>
+            <td>Order time: </td>
+            <td>{{ task.date_created }}</td>
+
+        </tr>
+        <tr><td>    <form action="/deleteOrder/{{task.p_id}}/{{task.o_id}}">
+            <input type="submit" value="Delete Order" />
+        </form></td></tr>
+        <tr><td><button class="editbtn">Update Your Oder</button></td></tr>
+    </div>
+        {% endfor %}
+    </table>
+    <center>     <form action="/homepage_p/{{id}}">
+        <input type="submit" value="Go Back to Main Page" />
+    </form>  </center>
+</div>
+
+>>>>>>> Stashed changes
 {% endblock %}

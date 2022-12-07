@@ -6,6 +6,7 @@
 
 {% block body %}
 <div class="content">
+<<<<<<< Updated upstream
     <h1 style="text-align: center">Finding your order!</h1>
     <table>
         <tr>
@@ -29,15 +30,64 @@
             <tr>
                 <td>{{ task.o_id }}</td>
                 <td>{{ task.p_id}}</td>
+=======
+    <h1 style="text-align: center">Check appointments!</h1>
+        <div class="form">
+        <form action="/appointment_d/{{driver.d_id}}" method="POST">
+
+            <div class="form">
+                <input type="submit" name = "btn" value="Order_by_early">
+            </div>
+
+            <div class="form">
+                <input type="submit" name = "btn" value="Order_by_latest">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_pick_up">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_drop_off">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_payment">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="refresh">
+            </div>
+        </form>
+    </div>
+    <table>
+         <tr>
+            <th>pick up</th>
+            <th>destination</th>
+            <th>start time</th>
+            <th>payment amount</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+>>>>>>> Stashed changes
                 <td>{{ task.planned_pickup}}</td>
                 <td>{{ task.planned_destination}}</td>
                 <td>{{ task.planned_start_time}}</td>
                 <td>{{ task.planned_payment_amount}}</td>
+<<<<<<< Updated upstream
 
             </tr>
         <div class="form">
             <input type="submit" name = "btn" value="Get this appointment!">
         </div>
+=======
+                <td>
+                    <form action="/accept_appointment/{{driver.d_id}}/{{task.a_id}}" method="POST" >
+                     <input type="submit" value="Get this appointment" name="btn1">
+                    </form>
+                </td>
+            </tr>
+>>>>>>> Stashed changes
         {% endfor %}
     </table>
 

@@ -2,10 +2,7 @@ from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-<<<<<<< Updated upstream
-=======
 import uuid
->>>>>>> Stashed changes
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'

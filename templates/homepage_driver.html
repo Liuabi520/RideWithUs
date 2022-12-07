@@ -53,14 +53,22 @@
             </div>
 
             <div class="form">
-                <input type="submit" name = "btn" value="check_order">
+                <input type="submit" name = "btn" value="checkAll_order">
             </div>
 
             <div class="form">
-                <input type="submit" name = "btn" value="check_appointment">
+                <input type="submit" name = "btn" value="checkAll_appointment">
             </div>
-
         </form>
     </div>
+    <div>
+        <form action="/appointment/{{tasks.d_id}}">
+            <input type="submit" value="View My Appointment" />
+        </form>
+        <form action="/profilePage_driver/{{tasks.d_id}}">
+            <input type="submit" value="Profile Page" />
+        </form>
+    </div>
+    
 </div>
 {% endblock %}

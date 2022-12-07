@@ -183,10 +183,14 @@ def homepage_d(id):
     elif request.method == 'POST':
         if (request.form['btn'] == 'edit_user_info'):
             driver = Driver.query.get_or_404(id)
-            driver.name = request.form['name']
-            driver.phoneNumber = request.form['phoneNumber']
-            driver.address = request.form['address']
-            driver.card_info = request.form['card_info']
+            if (request.form['name'] != ''):
+                driver.name = request.form['name']
+            if (request.form['phoneNumber'] != ''):
+                driver.phoneNumber = request.form['phoneNumber']
+            if (request.form['address'] != ''):
+                driver.address = request.form['address']
+            if (request.form['card_info'] != ''):
+                driver.card_info = request.form['card_info']
             try:
                 db.session.commit()
                 flash("updated")
@@ -275,7 +279,7 @@ def view_driver_inOrder(o_id):
         if (request.form['btn1'] == 'ViewDriverInfo'):
             sel_order = Order.query.get_or_404(o_id)
             driver_id = sel_order.d_id
-            return redirect(url_for('profilePage', id=driver_id))
+            return redirect(url_for('profilePage_driver', id=driver_id))
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -406,7 +410,13 @@ def profilePage(id):
         return render_template('profile.html', tasks=passenger)
     else:
         return "something wrong"
-
+@app.route('/profilePage_driver/<int:id>', methods=['GET'])
+def profilePage_driver(id):
+    if request.method == 'GET':
+        driver = Driver.query.get_or_404(id)
+        return render_template('profile_driver.html', tasks=driver)
+    else:
+        return "something wrong"
 
 @app.route('/order_waiting_ongoing/<int:o_id>/<int:u_id>', methods=['POST', 'GET'])
 def order_w_o(o_id, u_id):

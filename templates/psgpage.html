@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Login</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <div class="form">
+        <form action="/psgpage{{psg_id}}" method="POST">
+    <h1 style="text-align: center">Welcome to RideWithUs, Passenger {{psg_id}}</h1>
+    <p> You may want... </p>
+
+        <tr>Edit your Information:</tr><br>
+            <tr>Change your password:</tr><br>
+            <tr>Input your id:</tr><br>
+            <input type="number" name="id"><br>
+            <tr>Input your new Password:</tr><br>
+            <input type="text" name="password"><br>
+            <tr>Change your UserType:</tr><br>
+            <div class="form">
+                <label for="isDriver">Is Driver</label>
+                <input type="checkbox" name="isDriver" id="isDriver" value="yes"/>
+                <input type="hidden" name="isDriver" value="no"/>
+            </div>
+            <div class="form">
+                <input type="submit" name = "btn2" value="change">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

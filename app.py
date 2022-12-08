@@ -425,8 +425,8 @@ def appointment_d(id):
         return render_template('appointment_driver.html', tasks=appointments, driver=driver)
 
 
-@app.route('/accept_appointment/<d_id>/<a_id>', methods=['POST'])
-def accept_appointment(d_id, a_id):
+@app.route('/get_appointment/<d_id>/<a_id>', methods=['POST'])
+def get_appointment(d_id, a_id):
     driver = Driver.query.get_or_404(d_id)
     if request.method == 'POST':
         if request.form['btn1'] == 'Get this appointment':
@@ -436,11 +436,12 @@ def accept_appointment(d_id, a_id):
                 sel_app.d_id = d_id
                 sel_app.accept = True
                 db.session.commit()
-                flash("Accept successfully")
-                return redirect(url_for('appointment_wo_d', a_id=a_id, u_id=d_id))
+                flash("Get successfully")
+                appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).limit(7).all()
+                return render_template('appointment_driver.html', tasks=appointments, driver=driver)
             else:
-                flash("This order has been canceled")
-                appointments = Order.query.filter(Order.accept == False).filter(Order.done == False).limit(7).all()
+                flash("Appointment deleted")
+                appointments = Order.query.filter(Appointment.accept == False).filter(Appointment.done == False).limit(7).all()
                 return render_template('appointment_driver.html', tasks=appointments, driver=driver)
 
 

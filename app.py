@@ -150,15 +150,20 @@ def homepage_p(id):
             Passenger.pick_up = request.form['pick_up']
             Passenger.drop_off = request.form['drop_off']
             payment = request.form['payment_amount']
-            new_order = Order(p_id=id, pick_up=request.form['pick_up'], drop_off=request.form['drop_off'],
-                              date_created=datetime.now(), payment_amount=payment)
-            try:
-                db.session.add(new_order)
-                db.session.commit()
-                flash("you have successfully Post a new order")
-            except Exception as e:
-                flash(str(e))
-            return redirect(url_for('order_w_o', o_id=new_order.o_id, u_id=new_order.p_id))
+            if(Passenger.pick_up and Passenger.drop_off and payment):
+                new_order = Order(p_id=id, pick_up=request.form['pick_up'], drop_off=request.form['drop_off'],
+                                  date_created=datetime.now(), payment_amount=payment)
+                try:
+                    db.session.add(new_order)
+                    db.session.commit()
+                    flash("you have successfully Post a new order")
+                except Exception as e:
+                    flash(str(e))
+                return redirect(url_for('order_w_o', o_id=new_order.o_id, u_id=new_order.p_id))
+            else:
+                flash("Lack order information")
+                return render_template('homepage_passenger.html', tasks=passenger)
+
         elif request.form['btn'] == 'post_appointment':
             passenger = Passenger.query.get_or_404(id)
             planned_start_time = request.form['start_time']
@@ -186,7 +191,7 @@ def homepage_d(id):
         order = Order.query.filter(Order.d_id == id).filter(Order.done == False).all()
         if(order):
             flash("you have an ongoing order")
-            return render_template('order_waiting_driver.html', o_id=order[0].o_id, u_id=id)
+            return render_template('order_ongoing_driver.html', o_id=order[0].o_id, u_id=id)
         else:
             return render_template('homepage_driver.html', tasks=driver)
 
@@ -498,19 +503,9 @@ def order_wo_d(o_id, u_id):
     order = Order.query.get_or_404(o_id)
     if (request.method == 'GET'):
         if order.done == False:
-            return render_template('order_waiting_driver.html', o_id=o_id, u_id=u_id)
+            return render_template('order_ongoing_driver.html', task=order)
         else:
             flash("order complete!")
-            return redirect(url_for('homepage_d', id=u_id))
-
-@app.route('/appointment_w_o_driver/<int:a_id>/<int:u_id>', methods=['GET'])
-def appointment_wo_d(a_id, u_id):
-    appointment = Appointment.query.get_or_404(a_id)
-    if (request.method == 'GET'):
-        if appointment.done == False:
-            return render_template('appointment_waiting_driver.html', a_id=a_id, u_id=u_id)
-        else:
-            flash("appointment complete!")
             return redirect(url_for('homepage_d', id=u_id))
 
 

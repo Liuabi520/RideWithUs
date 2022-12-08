@@ -7,11 +7,20 @@
 
 {% block body %}
 <div class="content">
-    <h1 style="text-align: center">Your appointment in process</h1>
+    <h1 style="text-align: center">Your order in process</h1>
     <table>
         <tr>
             <th>Currently Please focus on driving</th>
         </tr>
     </table>
+    <table>
+        <tr>
+            <th>pick up location: </th>
+            <td>{{ task.pick_up}}</td>
+            <th>drop off location</th>
+            <td>{{ task.drop_off}}</td>
+        </tr>
+    </table>
+
 </div>
 {% endblock %}

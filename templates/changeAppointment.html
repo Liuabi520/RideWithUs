@@ -1,0 +1,24 @@
+{% block head %}
+<title>changeAppointment</title>
+{% endblock %}
+
+{% block body %}
+<div class="form">
+            <form action="/change_appointment/{{o_id}}/{{passenger}}" method="POST">
+                <tr>
+                    Appointment pick up:
+                </tr>
+                <input type="text" name="pick_up_app"><br>
+                <tr>
+                    Appointment drop off:
+                </tr>
+                <input type="text" name="drop_off_app"><br>
+                    <tr>Start Time:</tr>
+                    <input type="text" name="start_time"><br>
+                    <tr>How much would you like to pay for this trip?:</tr>
+                    <input type="text" name="planned_payment"><br>
+                <input type="submit" name = "btn" value="Change_Appointment"><br>
+            </form>
+            
+        </div>
+{% endblock %}

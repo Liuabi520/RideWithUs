@@ -40,6 +40,9 @@
         <tr><td>    <form action="/deleteAppointment/{{task.p_id}}/{{task.a_id}}">
             <input type="submit" value="Delete Appointment" />
         </form></td></tr>
+        <tr><td>    <form action="/change_appointment/{{task.a_id}}/{{task.p_id}}">
+            <input type="submit" value="Change Appointment" />
+        </form></td></tr>
         {% endfor %}
     </table>
     <center>     <form action="/homepage_p/{{id}}">

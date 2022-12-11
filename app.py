@@ -191,7 +191,7 @@ def homepage_d(id):
         order = Order.query.filter(Order.d_id == id).filter(Order.done == False).all()
         if(order):
             flash("you have an ongoing order")
-            return render_template('order_ongoing_driver.html', o_id=order[0].o_id, u_id=id)
+            return render_template('order_ongoing_driver.html', o_id=order[0].o_id, u_id=driver.d_id)
         else:
             return render_template('homepage_driver.html', tasks=driver)
 
@@ -277,6 +277,24 @@ def accept_order(d_id, o_id):
                 flash("This order has been canceled")
                 orders = Order.query.filter(Order.accept == False).filter(Order.done == False).limit(7).all()
                 return render_template('order_driver.html', tasks=orders, driver=driver)
+@app.route('/change_appointment/<o_id>/<p_id>', methods=['GET','POST'])
+def change_appointment(p_id, o_id):
+    passenger = Passenger.query.get_or_404(p_id)
+    if request.method == 'GET':
+        return render_template('changeAppointment.html', passenger=p_id, o_id=o_id)
+    else:
+        appointment = Appointment.query.get_or_404(o_id)
+        if (request.form['pick_up_app'] != ''):
+            appointment.planned_pickup = request.form['pick_up_app']
+        if (request.form['drop_off_app'] != ''):
+            appointment.planned_dropoff = request.form['drop_off_app']
+        if(request.form['start_time'] != ''):
+            appointment.planned_start_time = request.form['start_time']
+        if(request.form['planned_payment'] != ''):
+            appointment.planned_payment_amount = request.form['planned_payment']
+        db.session.commit()
+        appointments = Appointment.query.filter_by(p_id=p_id).all()
+        return render_template('appointment.html', tasks=appointments, id=p_id)
 
 @app.route('/cancel_order/<p_id>/<o_id>', methods=['POST'])
 def cancel_order(p_id, o_id):
@@ -294,7 +312,7 @@ def view_driver_inOrder(o_id):
         if (request.form['btn1'] == 'ViewDriverInfo'):
             sel_order = Order.query.get_or_404(o_id)
             driver_id = sel_order.d_id
-            return redirect(url_for('profilePage', id=driver_id))
+            return redirect(url_for('profilePage_driver', id=driver_id))
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -481,7 +499,7 @@ def Appointment_driver(id):
     else:
         return "something wrong"
 
-@app.route('/order_waiting_ongoing/<int:o_id>/<int:u_id>', methods=['POST', 'GET'])
+@app.route('/order_waiting_ongoing/<int:o_id>/<int:u_id>', methods=['POST', 'GET','PUT'])
 def order_w_o(o_id, u_id):
     order = Order.query.get_or_404(o_id)
     if (request.method == 'GET'):
@@ -490,6 +508,15 @@ def order_w_o(o_id, u_id):
         else:
             return render_template('order_ongoing.html', o_id=o_id, u_id=u_id)
     else:
+        if(request.form['btn1']):
+            if(request.form['btn1'] == 'Change Information'):
+                order = Order.query.get_or_404(o_id)
+                if(request.form['pick_up'] != ''):
+                    order.pick_up = request.form['pick_up']
+                if(request.form['drop_off'] != ''):
+                    order.drop_off = request.form['drop_off']
+                db.session.commit()
+                return render_template('order_waiting.html', o_id=o_id, u_id=u_id) 
         order.done = True
         db.session.commit()
         flash("your order has completed")

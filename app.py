@@ -97,16 +97,16 @@ def login():
                 flash('Error: id not exists')
                 return redirect('/')
 
-            # store procedure
+            # prepared statement
             query = "SELECT * FROM User WHERE id = :user_id"
             user_ = db.engine.execute(query, user_id=login_id)
             user = user_.first()
 
             user_pw = user['pw']
-            print(user_pw)
+            #print(user_pw)
 
             is_driver = user['isDriver']
-            print(is_driver)
+            #print(is_driver)
 
             # user = User.query.get_or_404(login_id)
             try:
@@ -130,7 +130,12 @@ def login():
 @app.route('/homepage_p/<int:id>', methods=['POST', 'GET'])
 def homepage_p(id):
     if request.method == 'GET':
-        passenger = Passenger.query.get_or_404(id)
+        # passenger = Passenger.query.get_or_404(id)
+        # prepared statement
+        query = "SELECT * FROM Passenger WHERE d_id = :psg_id"
+        psg_ = db.engine.execute(query, psg_id=id)
+        passenger = psg_.first()
+
         # Not sure if added function: check if driver already have an order
         order = Order.query.filter(Order.p_id == id).filter(Order.done == False).all()
         if (order):
@@ -141,8 +146,6 @@ def homepage_p(id):
     elif request.method == 'POST':
         if (request.form['btn'] == 'edit_user_info'):
             passenger = Passenger.query.get_or_404(id)
-            # store procedure
-
 
             if (request.form['name'] != ''):
                 passenger.name = request.form['name']
@@ -159,14 +162,17 @@ def homepage_p(id):
             except:
                 return "something wrong"
         elif request.form['btn'] == 'post_order':
-            passenger = Passenger.query.get_or_404(id)
-            # store procedure
+            # passenger = Passenger.query.get_or_404(id)
 
+            # prepared statement
+            query = "SELECT * FROM Passenger WHERE d_id = :psg_id"
+            psg_ = db.engine.execute(query, psg_id=id)
+            passenger = psg_.first()
 
-            Passenger.pick_up = request.form['pick_up']
-            Passenger.drop_off = request.form['drop_off']
+            pick_up = request.form['pick_up']
+            drop_off = request.form['drop_off']
             payment = request.form['payment_amount']
-            if(Passenger.pick_up and Passenger.drop_off and payment):
+            if(pick_up and drop_off and payment):
                 new_order = Order(p_id=id, pick_up=request.form['pick_up'], drop_off=request.form['drop_off'],
                                   date_created=datetime.now(), payment_amount=payment)
                 try:
@@ -181,9 +187,13 @@ def homepage_p(id):
                 return render_template('homepage_passenger.html', tasks=passenger)
 
         elif request.form['btn'] == 'post_appointment':
-            passenger = Passenger.query.get_or_404(id)
-            # store procedure
+            # passenger = Passenger.query.get_or_404(id)
 
+            # prepared statement
+            query = "SELECT * FROM Passenger WHERE d_id = :psg_id"
+            psg_ = db.engine.execute(query, psg_id=id)
+            passenger = psg_.first()
+            #print(passenger)
 
             planned_start_time = request.form['start_time']
             planned_payment_amount = request.form['planned_payment']
@@ -199,26 +209,29 @@ def homepage_p(id):
                 flash("Inserted a new appointment")
             except Exception as e:
                 flash(e)
-        return render_template('homepage_passenger.html', tasks=passenger)
+            return render_template('homepage_passenger.html', tasks=passenger)
 
 
 @app.route('/homepage_d/<int:id>', methods=['POST', 'GET'])
 def homepage_d(id):
     if request.method == 'GET':
-        driver = Driver.query.get_or_404(id)
+        # driver = Driver.query.get_or_404(id)
+
+        # prepared statement
+        query = "SELECT * FROM Driver WHERE d_id = :id"
+        dr_ = db.engine.execute(query, id=id)
+        driver = dr_.first()
         # Not sure if added function: check if driver already have an order
         order = Order.query.filter(Order.d_id == id).filter(Order.done == False).all()
         if(order):
             flash("you have an ongoing order")
-            return render_template('order_ongoing_driver.html', o_id=order[0].o_id, u_id=driver.d_id)
+            return render_template('order_ongoing_driver.html', task=order[0])
         else:
             return render_template('homepage_driver.html', tasks=driver)
 
     elif request.method == 'POST':
         if (request.form['btn'] == 'edit_user_info'):
             driver = Driver.query.get_or_404(id)
-            # store procedure
-
 
             if (request.form['name'] != ''):
                 driver.name = request.form['name']
@@ -245,8 +258,6 @@ def homepage_d(id):
 @app.route('/order_p/<int:id>', methods=['POST', 'GET'])
 def order_p(id):
     if request.method == 'GET':
-        # store procedure
-
         orders = Order.query.filter_by(p_id=id).all()
         return render_template('order_passenger.html', tasks=orders, id=id)
 
@@ -311,7 +322,7 @@ def change_appointment(p_id, o_id):
         if (request.form['pick_up_app'] != ''):
             appointment.planned_pickup = request.form['pick_up_app']
         if (request.form['drop_off_app'] != ''):
-            appointment.planned_dropoff = request.form['drop_off_app']
+            appointment.planned_destination = request.form['drop_off_app']
         if(request.form['start_time'] != ''):
             appointment.planned_start_time = request.form['start_time']
         if(request.form['planned_payment'] != ''):
@@ -324,11 +335,12 @@ def change_appointment(p_id, o_id):
 def cancel_order(p_id, o_id):
     if request.method == 'POST':
         if (request.form['btn1'] == 'Cancel'):
-            sel_order = Order.query.get_or_404(o_id)
-            # store procedure
+            # sel_order = Order.query.get_or_404(o_id)
 
+            # prepared statement
+            query = "DELETE FROM 'Order' WHERE o_id = :id"
+            db.engine.execute(query, id=o_id)
 
-            db.session.delete(sel_order)
             db.session.commit()
             flash("Cancel Order successfully")
             return redirect(url_for('homepage_p', id=p_id))
@@ -401,8 +413,6 @@ def admin():
             flash("wrong user info")
             return redirect("/admin")
     else:
-        # store Procedure
-
         logins = User.query.order_by(User.id).all()
         return render_template('admin.html', tasks=logins)
 
@@ -410,27 +420,20 @@ def admin():
 @app.route('/delete/<int:id>')
 def delete(id):
     # get the value by id, if not found then 404
-    delete_login = User.query.get_or_404(id)
 
-    try:
-        db.session.delete(delete_login)
-        db.session.commit()
-        return redirect('/admin')
-    except:
-        return 'There was a problem deleting that registration'
+    # prepared statement
+    query = "DELETE FROM User WHERE id = :u_id"
+    db.engine.execute(query, u_id=id)
+    db.session.commit()
+    return redirect('/admin')
 
 
 @app.route('/deleteOrder/<int:Uid>/<int:id>', methods=['GET'])
 def deleteOrder(Uid, id):
-    # get the value by id, if not found then 404
-    app.logger.info(Uid)
-    order = Order.query.get_or_404(id)
-    try:
-        db.session.delete(order)
-        db.session.commit()
-        return redirect('/order_p/' + str(Uid))
-    except:
-        return 'There was a problem deleting that registration'
+    # prepared statement
+    query = "DELETE FROM 'Order' WHERE o_id = :id"
+    db.engine.execute(query, id=id)
+    return redirect('/order_p/' + str(Uid))
 
 
 @app.route('/appointment/<int:id>', methods=['POST', 'GET'])
@@ -453,15 +456,15 @@ def appointment_d(id):
             return render_template('appointment_driver.html', tasks=appointments, driver=driver)
         elif (request.form['btn'] == 'Order_by_pick_up'):
             appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
-                Appointment.pick_up).limit(7).all()
+                Appointment.planned_pickup).limit(7).all()
             return render_template('appointment_driver.html', tasks=appointments, driver=driver)
         elif (request.form['btn'] == 'Order_by_drop_off'):
             appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
-                Appointment.drop_off).limit(7).all()
+                Appointment.planned_destination).limit(7).all()
             return render_template('appointment_driver.html', tasks=appointments, driver=driver)
         elif (request.form['btn'] == 'Order_by_payment'):
             appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
-                Appointment.payment_amount.desc()).limit(7).all()
+                Appointment.planned_payment_amount.desc()).limit(7).all()
             return render_template('appointment_driver.html', tasks=appointments, driver=driver)
         elif (request.form['btn'] == 'refresh'):
             appointments = Appointment.query.filter(Appointment.accept == False).filter(Appointment.done == False).order_by(
@@ -495,27 +498,31 @@ def get_appointment(d_id, a_id):
 @app.route('/deleteAppointment/<int:Uid>/<int:id>', methods=['GET'])
 def deleteAppointment(Uid, id):
     # get the value by id, if not found then 404
-    app.logger.info(Uid)
-    appoint = Appointment.query.get_or_404(id)
-    try:
-        db.session.delete(appoint)
-        db.session.commit()
-        return redirect('/appointment/' + str(Uid))
-    except:
-        return 'There was a problem deleting that registration'
+    # prepared statement
+    query = "DELETE FROM Appointment WHERE a_id = :id"
+    db.engine.execute(query, id=id)
+    return redirect('/appointment/' + str(Uid))
 
 
 @app.route('/profilePage/<int:id>', methods=['GET'])
 def profilePage(id):
     if request.method == 'GET':
-        passenger = Passenger.query.get_or_404(id)
+        # passenger = Passenger.query.get_or_404(id)
+        # prepared statement
+        query = "SELECT * FROM Passenger WHERE d_id = :psg_id"
+        psg_ = db.engine.execute(query, psg_id=id)
+        passenger = psg_.first()
         return render_template('profile.html', tasks=passenger)
     else:
         return "something wrong"
 @app.route('/profilePage_driver/<int:id>', methods=['GET'])
 def profilePage_driver(id):
     if request.method == 'GET':
-        driver = Driver.query.get_or_404(id)
+        # driver = Driver.query.get_or_404(id)
+        # prepared statement
+        query = "SELECT * FROM Driver WHERE d_id = :id"
+        dr_ = db.engine.execute(query, id=id)
+        driver = dr_.first()
         return render_template('profile_driver.html', tasks=driver)
     else:
         return "something wrong"

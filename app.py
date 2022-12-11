@@ -97,10 +97,20 @@ def login():
                 flash('Error: id not exists')
                 return redirect('/')
 
-            user = User.query.get_or_404(login_id)
-            is_driver = user.isDriver
+            # store procedure
+            query = "SELECT * FROM User WHERE id = :user_id"
+            user_ = db.engine.execute(query, user_id=login_id)
+            user = user_.first()
+
+            user_pw = user['pw']
+            print(user_pw)
+
+            is_driver = user['isDriver']
+            print(is_driver)
+
+            # user = User.query.get_or_404(login_id)
             try:
-                if (user.pw == login_pw):
+                if (user_pw == login_pw):
                     if (is_driver):
                         return redirect(url_for('homepage_d', id=login_id))
                     else:
@@ -131,6 +141,9 @@ def homepage_p(id):
     elif request.method == 'POST':
         if (request.form['btn'] == 'edit_user_info'):
             passenger = Passenger.query.get_or_404(id)
+            # store procedure
+
+
             if (request.form['name'] != ''):
                 passenger.name = request.form['name']
             if (request.form['phoneNumber'] != ''):
@@ -147,6 +160,9 @@ def homepage_p(id):
                 return "something wrong"
         elif request.form['btn'] == 'post_order':
             passenger = Passenger.query.get_or_404(id)
+            # store procedure
+
+
             Passenger.pick_up = request.form['pick_up']
             Passenger.drop_off = request.form['drop_off']
             payment = request.form['payment_amount']
@@ -166,6 +182,9 @@ def homepage_p(id):
 
         elif request.form['btn'] == 'post_appointment':
             passenger = Passenger.query.get_or_404(id)
+            # store procedure
+
+
             planned_start_time = request.form['start_time']
             planned_payment_amount = request.form['planned_payment']
             planned_pickup = request.form['pick_up_app']
@@ -198,6 +217,9 @@ def homepage_d(id):
     elif request.method == 'POST':
         if (request.form['btn'] == 'edit_user_info'):
             driver = Driver.query.get_or_404(id)
+            # store procedure
+
+
             if (request.form['name'] != ''):
                 driver.name = request.form['name']
             if (request.form['phoneNumber'] != ''):
@@ -223,6 +245,8 @@ def homepage_d(id):
 @app.route('/order_p/<int:id>', methods=['POST', 'GET'])
 def order_p(id):
     if request.method == 'GET':
+        # store procedure
+
         orders = Order.query.filter_by(p_id=id).all()
         return render_template('order_passenger.html', tasks=orders, id=id)
 
@@ -283,6 +307,9 @@ def cancel_order(p_id, o_id):
     if request.method == 'POST':
         if (request.form['btn1'] == 'Cancel'):
             sel_order = Order.query.get_or_404(o_id)
+            # store procedure
+
+
             db.session.delete(sel_order)
             db.session.commit()
             flash("Cancel Order successfully")
@@ -356,6 +383,8 @@ def admin():
             flash("wrong user info")
             return redirect("/admin")
     else:
+        # store Procedure
+
         logins = User.query.order_by(User.id).all()
         return render_template('admin.html', tasks=logins)
 

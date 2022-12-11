@@ -44,6 +44,30 @@
             <input type="submit" value="Change Appointment" />
         </form></td></tr>
         {% endfor %}
+        <form action="/appointment/{{id}}" method="POST">
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_pick_up">
+            </div>
+            <div class="form">
+                <tr>
+                    Lowest Payment:
+                </tr>
+                <input type="text" name="Lowest Payment">
+                <tr>
+                    Highest Payment:
+                </tr>
+                <input type="text" name="Highest Payment">
+                <tr>   
+                <input type="submit" name="btn" value="Filter Payment Amount">
+            </div>
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_drop_off">
+            </div>
+
+            <div class="form">
+                <input type="submit" name="btn" value="Order_by_payment">
+            </div>
+        </form>
     </table>
     <center>     <form action="/homepage_p/{{id}}">
         <input type="submit" value="Go Back to Main Page" />

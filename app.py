@@ -440,6 +440,15 @@ def deleteOrder(Uid, id):
 def appointment(id):
     if request.method == 'GET':
         appointments = Appointment.query.filter_by(p_id=id).all()
+    elif request.method =='POST':
+        if(request.form['btn'] == 'Order_by_pick_up'):
+            appointments = Appointment.query.filter_by(p_id=id).order_by(Appointment.planned_start_time).all()
+        elif(request.form['btn'] == 'Order_by_drop_off'):
+            appointments = Appointment.query.filter_by(p_id=id).order_by(Appointment.planned_destination).all()
+        elif(request.form['btn'] == 'Order_by_payment'):
+            appointments = Appointment.query.filter_by(p_id=id).order_by(Appointment.planned_payment_amount).all()
+        elif(request.form['btn'] == 'Filter Payment Amount'):
+            appointments = Appointment.query.filter_by(p_id=id).filter(Appointment.planned_payment_amount >= request.form['Lowest Payment']).filter(Appointment.planned_payment_amount <= request.form['Highest Payment']).all()
     return render_template('appointment.html', tasks=appointments, id=id)
 
 @app.route('/appointment_d/<int:id>', methods=['POST', 'GET'])

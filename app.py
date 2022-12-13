@@ -536,13 +536,22 @@ def profilePage_driver(id):
     else:
         return "something wrong"
 
-@app.route('/Myappointment_d/<int:id>', methods=['GET'])
+@app.route('/Myappointment_d/<int:id>', methods=['GET','POST'])
 def Appointment_driver(id):
     if request.method == 'GET':
         appointments = Appointment.query.filter_by(d_id=id).all()
         return render_template('MyAppointment_d.html', tasks=appointments, id = id)
     else:
-        return "something wrong"
+        if(request.form['btn'] == 'Order_by_pick_up'):
+            appointments = Appointment.query.filter_by(d_id=id).order_by(Appointment.planned_start_time).all()
+        elif(request.form['btn'] == 'Order_by_drop_off'):
+            appointments = Appointment.query.filter_by(d_id=id).order_by(Appointment.planned_destination).all()
+        elif(request.form['btn'] == 'Order_by_payment'):
+            appointments = Appointment.query.filter_by(d_id=id).order_by(Appointment.planned_payment_amount).all()
+        elif(request.form['btn'] == 'Filter Payment Amount'):
+            appointments = Appointment.query.filter_by(d_id=id).filter(Appointment.planned_payment_amount >= request.form['Lowest Payment']).filter(Appointment.planned_payment_amount <= request.form['Highest Payment']).all()
+        return render_template('MyAppointment_d.html', tasks=appointments, id=id)
+        
 
 @app.route('/order_waiting_ongoing/<int:o_id>/<int:u_id>', methods=['POST', 'GET','PUT'])
 def order_w_o(o_id, u_id):

@@ -32,10 +32,40 @@
         <input type="submit" value="Change Information" name="btn1">
     </form>
 
-    <div class="form">
-        <form action="/view_driver_inOrder/{{o_id}}" method="POST">
-            <input type="submit" value="ViewDriverInfo" name="btn1">
-        </form>
-    </div>
+    <table>
+            <tr>
+                Current Order Info:
+            </tr>
+            <tr>
+                <td>id: </td>
+                <td>{{ order.o_id }}</td>
+            </tr>
+            <tr>
+                <td>pick up: </td>
+                <td>{{ order.pick_up }}</td>
+            </tr>
+            <tr>
+                <td>phone number: </td>
+                <td>{{ order.drop_off }}</td>
+            </tr>
+    </table>
+
+    <table>
+            <tr>
+                Driver Info:
+            </tr>
+            <tr>
+                <td>id: </td>
+                <td>{{ driver.d_id }}</td>
+            </tr>
+            <tr>
+                <td>name: </td>
+                <td>{{ driver.name }}</td>
+            </tr>
+            <tr>
+                <td>phone number: </td>
+                <td>{{ driver.phoneNumber }}</td>
+            </tr>
+    </table>
 </div>
 {% endblock %}

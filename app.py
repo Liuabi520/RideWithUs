@@ -103,10 +103,8 @@ def login():
             user = user_.first()
 
             user_pw = user['pw']
-            #print(user_pw)
 
             is_driver = user['isDriver']
-            #print(is_driver)
 
             # user = User.query.get_or_404(login_id)
             try:
@@ -560,7 +558,9 @@ def order_w_o(o_id, u_id):
         if order.d_id == -1:
             return render_template('order_waiting.html', o_id=o_id, u_id=u_id)
         else:
-            return render_template('order_ongoing.html', o_id=o_id, u_id=u_id)
+            driver_id = order.d_id
+            driver = Driver.query.get_or_404(driver_id)
+            return render_template('order_ongoing.html', o_id=o_id, u_id=u_id, driver=driver, order=order)
     else:
         if(request.form['btn1']):
             if(request.form['btn1'] == 'Change Information'):
